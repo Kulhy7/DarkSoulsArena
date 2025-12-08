@@ -1,6 +1,6 @@
 # Copyright (c) 2025 Luboš Kulhan
 # Licensed under the MIT License.
-#
+
 # This is a non-commercial fan project inspired by the Dark Souls series
 # by FromSoftware. All Dark Souls names, characters, and content belong
 # to their respective owners.
@@ -25,7 +25,8 @@ counter_attack = False
 special_move_cooldown = 0
 special_move_ready = True
 boss_intro = None
-phase_2_text = None
+phase_2_text_part1 = None
+phase_2_text_part2 = None
 boss_win_text = None
 boss_defeated_text = None
 boss_phase2_win_text = None
@@ -33,7 +34,7 @@ boss_phase2_defeated_text = None
 boss_phase2_defeated_reignite = None
 boss_phase2_defeated_extinguish = None
 phase_2_active = False
-phase_2 = False
+phase_2_stat_modified = False
 difficulty_mode = "Normal"
 real_champ_damage = None
 real_boss_damage = None
@@ -72,9 +73,9 @@ class Boss:
 # Champions ----------------------------------------
 champions = [
     Champion("Knight", 150,80,100,30,"Standard","Slash","Strike/Magic"),
-    Champion("Paladin", 200,60,120,20,"Strike","Slash/Holy","Strike/Magic"),
-    Champion("Assassin", 100,100,90,50,"Slash","Strike/Magic","Slash/Fire"),
-    Champion("Sorcerer", 90,120,90,30,"Magic","Magic","Slash/Fire"),
+    Champion("Paladin", 200,60,110,20,"Strike","Slash/Holy","Strike/Magic"),
+    Champion("Assassin", 120,100,90,50,"Slash","Strike/Magic","Slash/Fire"),
+    Champion("Sorcerer", 110,120,90,30,"Magic","Magic","Slash/Fire"),
     Champion("Samurai", 130,80,100,35,"Slash","Strike","Magic/Fire"),
     Champion("Pyromancer", 110,90,90,30,"Fire","Fire","Slash/Holy")
 ]
@@ -101,12 +102,21 @@ def skip():
     clear_screen()
 
 def main_menu():    # Main menu function
+    global difficulty_mode
     while True:
         print("Welcome to Dark Souls 3 Pantheon!")
         print("1. Start Game\n2. Champions list\n3. Bosses list\n4. Consumables list\n5. Damage types\n6. Credits\n7. Exit")
         choice = input("Enter your choice: ")
         if choice == '1':
             clear_screen()
+            dif_choice = input("Choose difficulty (Normal = 1, Hard = 2): ")
+            if dif_choice == '1':
+                difficulty_mode = "Normal"
+                print("\nYou choosed Normal mode. Foes will hold back.")
+            else:
+                difficulty_mode = "Hard"
+                print("\nYou choosed Hard mode. Foes will not hold back.")
+            skip()
             choose_champion_boss()
         elif choice == '2':
             clear_screen()
@@ -199,136 +209,99 @@ def consumables_list():
     skip()
 def damage_types():
     print("List of damage types:\n")
-    print("Standard\nPlain, unadorned strikes that rely on raw force; steady against most foes but lacks specialization.")
-    print("Slash\nA cutting edge that tears through flesh and fabric, leaving wounds that fester; less effective against heavy armor.")
-    print("Strike\nBlunt, crushing blows that batter armor and bone alike; weaker against lightly armored or nimble foes.")
-    print("Magic\nArcane energy woven from study and will, capable of piercing both body and mind; weak against foes hardened by magic.")
-    print("Fire\nFlames that burn and sear, capable of rending flesh and spirit; less effective against flame followers and demons alike.")
+    print("Standard\nPlain, unadorned strikes that rely on raw force; steady against most foes but lacks specialization.\n")
+    print("Slash\nA cutting edge that tears through flesh and fabric, leaving wounds that fester; less effective against heavy armor.\n")
+    print("Strike\nBlunt, crushing blows that batter armor and bone alike; weaker against lightly armored or nimble foes.\n")
+    print("Magic\nArcane energy woven from study and will, capable of piercing both body and mind; weak against foes hardened by magic.\n")
+    print("Fire\nFlames that burn and sear, capable of rending flesh and spirit; less effective against flame followers and demons alike.\n")
     skip()
 def credits():
-    print("Game made by Luboš Kulhan.\nLast update in 2025-11-04.")
+    print("Game made by Luboš Kulhan.\nLast update in 2025-12-08.")
     skip()
 
 def boss_text(boss,champion):
     global boss_intro
     global boss_win_text
     global boss_defeated_text
-    global phase_2_text
+    global phase_2_text_part1
+    global phase_2_text_part2
     global boss_phase2_win_text
     global boss_phase2_defeated_text
     global boss_phase2_defeated_reignite
     global boss_phase2_defeated_extinguish
     match player_boss.name:
         case "Iudex Gundyr":
-            if difficulty_mode == "Normal":
-                boss_intro = f"\n{boss} kneels in silence... then rises to judge the unkindled once more.\n"
-                boss_win_text = f"{champion} is cast down, their flame unworthy in the eyes of {boss}. The forgotten judge returns to his vigil."
-                boss_defeated_text = f"{boss} falls to one knee, his duty finally ended. As he turns to dust, {champion} senses the weight of judgment fade into stillness."
-            else:   # Hard mode -> Phase 2
-                boss_phase2_win_text = f"{champion} falls, overwhelmed by the relentless fury of {boss}. No mercy remains — only the echoes of judgment endure."
-                boss_phase2_defeated_text = f"{boss} collapses at last, shattered by the unkindled's resolve. As his form dissolves to ash, {champion} perceives the lingering judgment slowly fading into stillness."
-                phase_2_text = f"{boss} falls to one knee, trembling... then rises anew, his form twisted by black ichor. The silent judge is gone — only wrath remains."
+            boss_intro = f"\n{boss} kneels in silence... then rises to judge the unkindled once more.\n"
+            boss_win_text = f"{champion} is cast down, their flame unworthy in the eyes of {boss}. The forgotten judge returns to his vigil."
+            boss_defeated_text = f"{boss} falls to one knee, his duty finally ended. As he turns to dust, {champion} senses the weight of judgment fade into stillness."
+            boss_phase2_win_text = f"{champion} falls, overwhelmed by the relentless fury of {boss}. No mercy remains — only the echoes of judgment endure."
+            boss_phase2_defeated_text = f"{boss} collapses at last, shattered by the unkindled's resolve. As his form dissolves to ash, {champion} perceives the lingering judgment slowly fading into stillness."
+            phase_2_text_part1 = f"{boss} falls to one knee, trembling"
+            phase_2_text_part2 = " then rises anew, his form twisted by black ichor. The silent judge is gone — only wrath remains."
         case "Vordt of the Boreal Valley":
-            if difficulty_mode == "Normal":
-                boss_intro = f"\nA chilling wind sweeps the air as {boss} emerges from the frost.\n"
-                boss_win_text = f"{champion} is crushed beneath the icy fury of {boss}. The frozen beast bellows into the void, bound forever to his madness."
-                boss_defeated_text = f"With a final, shuddering roar, {boss} collapses. Frost turns to mist as {champion} stands amidst the silence of a long-dead kingdom."
-            else:
-                boss_win_text = f"{champion} is torn apart beneath the relentless onslaught of {boss}, each icy strike etching agony into flesh and bone."
-                boss_defeated_text = f"{boss} finally falls, his monstrous howls echoing across the frozen valley. {champion} stands battered, yet the icy shadow lingers long after the roar fades."
-                phase_2_text = f"{boss} falters, frost cracking across his massive frame... his body enshrouded in a blizzard of icy wrath. The frozen beast's roar is relentless."
+            boss_intro = f"\nA chilling wind sweeps the air as {boss} emerges from the frost.\n"
+            boss_win_text = f"{champion} is crushed beneath the icy fury of {boss}. The frozen beast bellows into the void, bound forever to his madness."
+            boss_defeated_text = f"With a final, shuddering roar, {boss} collapses. Frost turns to mist as {champion} stands amidst the silence of a long-dead kingdom."
+            boss_phase2_win_text = f"{champion} is torn apart beneath the relentless onslaught of {boss}, each icy strike etching agony into flesh and bone."
+            boss_phase2_defeated_text = f"{boss} finally falls, his monstrous howls echoing across the frozen valley. {champion} stands battered, yet the icy shadow lingers long after the roar fades."
+            phase_2_text_part1 = f"{boss} falters, frost cracking across his massive frame"
+            phase_2_text_part2 = " his body enshrouded in a blizzard of icy wrath. The frozen beast's roar is relentless."
         case "Crystal Sage":
-            if difficulty_mode == "Normal":
-                boss_intro = f"\nA hooded figure shuffles from the mist, staff cracked, robes tattered. {boss} mutters forgotten incantations.\n"
-                boss_win_text = f"{champion} is unmade by a storm of crystal shards. The Sage’s hollow chant fades into silence."
-                boss_defeated_text = f"{boss} falls, staff splintering. Shards scatter like dead stars. {champion} stands in the ruins of a library long burned."
-            else:
-                boss_phase2_win_text = f"{champion} is torn asunder by the relentless barrage of crystalline magic. Each spell twists reality, leaving only disorientation and ruin in its wake."
-                boss_phase2_defeated_text = f"{boss} collapses, fragments of light scattering like broken time itself. {champion} barely stands, the echoes of arcane fury still ringing in their ears."
-                phase_2_text = f"{boss} fractures, her form splitting into twin apparitions. One real, one false—both wield the same deadly sorcery. The Sage's deception begins."
+            boss_intro = f"\nA hooded figure shuffles from the mist, staff cracked, robes tattered. {boss} mutters forgotten incantations.\n"
+            boss_win_text = f"{champion} is unmade by a storm of crystal shards. The Sage’s hollow chant fades into silence."
+            boss_defeated_text = f"{boss} falls, staff splintering. Shards scatter like dead stars. {champion} stands in the ruins of a library long burned."
+            boss_phase2_win_text = f"{champion} is torn asunder by the relentless barrage of crystalline magic. Each spell twists reality, leaving only disorientation and ruin in its wake."
+            boss_phase2_defeated_text = f"{boss} collapses, fragments of light scattering like broken time itself. {champion} barely stands, the echoes of arcane fury still ringing in their ears."
+            phase_2_text_part1 = f"{boss} fractures, her form splitting into twin apparitions. One real, one false—both wield the same deadly sorcery"
+            phase_2_text_part2 = " the Sage's deception begins."
         case "Abyss Watchers":
-            if difficulty_mode == "Normal":
-                boss_intro = f"\nA chorus of clashing steel echoes through the dark as {boss} surge forward.\n"
-                boss_win_text = f"{champion} is overwhelmed by the frenzied blades of {boss}. Their cursed vigil continues, unbroken and unyielding."
-                boss_defeated_text = f"{boss} falters, their final clash silenced at last. {champion} stands amidst the ashen remains of a brotherhood lost to darkness."
-            else:
-                boss_win_text = f"{champion} is cut down by the relentless coordination of {boss}, each strike precise, merciless, and unrelenting."
-                boss_defeated_text = f"{boss} crumbles, their abyssal flame snuffed out. {champion} stands weary, the shadows of their brotherhood lingering long after the fight."
-                phase_2_text = f"As the last Abyss Watcher falls, the {champion} stands victorious. Then the souls of the fallen gather, filling an empty vessel. From it, one final Abyss Watcher rises, filled with the suffering and fury of his fallen brothers."
+            boss_intro = f"\nA chorus of clashing steel echoes through the dark as {boss} surge forward.\n"
+            boss_win_text = f"{champion} is overwhelmed by the frenzied blades of {boss}. Their cursed vigil continues, unbroken and unyielding."
+            boss_defeated_text = f"{boss} falters, their final clash silenced at last. {champion} stands amidst the ashen remains of a brotherhood lost to darkness."
+            boss_phase2_win_text = f"{champion} is cut down by the relentless coordination of {boss}, each strike precise, merciless, and unrelenting."
+            boss_phase2_defeated_text = f"{boss} crumbles, their abyssal flame snuffed out. {champion} stands weary, the shadows of their brotherhood lingering long after the fight."
+            phase_2_text_part1 = f"As the last Abyss Watcher falls, the {champion} stands victorious"
+            phase_2_text_part2 = " then the souls of the fallen gather, filling an empty vessel. From it, one final Abyss Watcher rises, filled with the suffering and fury of his fallen brothers."
         case "Pontiff Sulyvahn":
-            if difficulty_mode == "Normal":
-                boss_intro = f"\nTwin swords gleam in the dim light as {boss} descends, a crownless sovereign of fire and deceit.\n"
-                boss_win_text = f"{champion} falls beneath the merciless onslaught of {boss}. The Pontiff’s dominion persists, cruel and unchallenged."
-                boss_defeated_text = f"{boss} crumples, his ambition turned to ash. {champion} feels the oppressive weight of tyranny lift, if only for a fleeting moment."
-            else:
-                boss_win_text = f"{champion} is overwhelmed by {boss}'s relentless assault, each strike a cold testament to power corrupted. Mercy has long fled from this hall."
-                boss_defeated_text = f"At last, {boss} crumbles, his silvered blades clattering to the ground. {champion} feels the oppressive weight of tyranny lift, if only for a moment."
-                phase_2_text = f"{boss} falters, shadows twisting around him... then he surges forth, twin swords blazing, swifter and deadlier than ever, each strike a storm of wrath and steel."
+            boss_intro = f"\nTwin swords gleam in the dim light as {boss} descends, a crownless sovereign of fire and deceit.\n"
+            boss_win_text = f"{champion} falls beneath the merciless onslaught of {boss}. The Pontiff’s dominion persists, cruel and unchallenged."
+            boss_defeated_text = f"{boss} crumples, his ambition turned to ash. {champion} feels the oppressive weight of tyranny lift, if only for a fleeting moment."
+            boss_phase2_win_text = f"{champion} is overwhelmed by {boss}'s relentless assault, each strike a cold testament to power corrupted. Mercy has long fled from this hall."
+            boss_phase2_defeated_text = f"At last, {boss} crumbles, his silvered blades clattering to the ground. {champion} feels the oppressive weight of tyranny lift, if only for a moment."
+            phase_2_text_part1 = f"{boss} falters, shadows twisting around him"
+            phase_2_text_part2 = " then he surges forth, twin swords blazing, swifter and deadlier than ever, each strike a storm of wrath and steel."
         case "Yhorm the Giant":
-            if difficulty_mode == "Normal":
-                boss_intro = f"\nThe ground trembles with each step as {boss} rises.\n"
-                boss_win_text = f"{champion} is crushed beneath the towering might of {boss}. His sorrowful roar echoes across the desolate land."
-                boss_defeated_text = f"{boss} collapses, the last ember of his dominion snuffed out. {champion} stands amidst the ruins of a kingdom long forgotten."
-            else:
-                boss_win_text = f"{champion} is incinerated in {boss}'s profane inferno. The giant's grief consumes all."
-                boss_defeated_text = f"{boss} falls silent, profane flames guttering to ash. {champion} stands over the broken throne, storm fading."
-                phase_2_text = f"{boss} staggers, clutching his chest... then roars in anguish. Profane flame erupts from his wounds, storm clouds gathering above. The betrayed lord unleashes his final fury."
+            boss_intro = f"\nThe ground trembles with each step as {boss} rises.\n"
+            boss_win_text = f"{champion} is crushed beneath the towering might of {boss}. His sorrowful roar echoes across the desolate land."
+            boss_defeated_text = f"{boss} collapses, the last ember of his dominion snuffed out. {champion} stands amidst the ruins of a kingdom long forgotten."
+            boss_phase2_win_text = f"{champion} is incinerated in {boss}'s profane inferno. The giant's grief consumes all."
+            boss_phase2_defeated_text = f"{boss} falls silent, profane flames guttering to ash. {champion} stands over the broken throne, storm fading."
+            phase_2_text_part1 = f"{boss} staggers, clutching his chest"
+            phase_2_text_part2 = " then roars in anguish. Profane flame erupts from his wounds, storm clouds gathering above. The betrayed lord unleashes his final fury."
         case "Soul of Cinder":
-            if difficulty_mode == "Normal":
-                boss_intro = f"\nThe echo of countless fallen souls whispers as {boss} approaches.\n"
-                boss_win_text = f"{champion} falls, their flame extinguished. {boss} roams once more, awaiting the next challenger."
-                boss_defeated_text = f"{boss} collapses into ash and silence. Yet even in victory, {champion} feels the weight of a thousand untold sacrifices."
-            else:                    
-                boss_win_text = f"{champion} falls before the first Lord's unyielding will. The throne remains eternal."
-                boss_phase2_defeated_reignite = f"{boss} scatters to final embers. {champion} kneels before the First Flame and feeds it their soul. The cycle endures."
-                boss_phase2_defeated_extinguish = f"{boss} scatters to final embers. {champion} turns from the First Flame and walks into shadow. The Age of Dark begins."
-                if 1 == r.randint(1,100):
-                    phase_2_text = "Plim Plim Plom, Plim Plom Plim, Plim Plom..."
-                else:
-                    phase_2_text = f"{boss} crumbles to ash... then reignites with blinding fury. Gwyn's soul dominates—the progenitor of flame rejects defeat."
+            boss_intro = f"\nThe echo of countless fallen souls whispers as {boss} approaches.\n"
+            boss_win_text = f"{champion} falls, their flame extinguished. {boss} roams once more, awaiting the next challenger."
+            boss_defeated_text = f"{boss} collapses into ash and silence. Yet even in victory, {champion} feels the weight of a thousand untold sacrifices."
+            boss_phase2_win_text = f"{champion} falls before the first Lord's unyielding will. The throne remains eternal."
+            boss_phase2_defeated_reignite = f"{boss} scatters to final embers. {champion} kneels before the First Flame and feeds it their soul. The cycle endures."
+            boss_phase2_defeated_extinguish = f"{boss} scatters to final embers. {champion} turns from the First Flame and walks into shadow. The Age of Dark begins."
+            if 1 == r.randint(1,100):
+                phase_2_text_part1 = "Plim Plim Plom, Plim Plom Plim, Plim Plom"
+            else:
+                phase_2_text_part1 = f"{boss} crumbles to ash"
+                phase_2_text_part2 = " then reignites with blinding fury. Gwyn's soul dominates—the progenitor of flame rejects defeat."
 
     return (
         boss_intro or "",
         boss_win_text or "",
         boss_defeated_text or "",
-        phase_2_text or "",
+        phase_2_text_part1 or "",
+        phase_2_text_part2 or "",
         boss_phase2_win_text or "",
         boss_phase2_defeated_text or "",
         boss_phase2_defeated_reignite or "",
         boss_phase2_defeated_extinguish or ""
-    )
-
-def phase2Modifier():
-    match player_boss.name:
-        case "Iudex Gundyr":
-            iudexGundyr_phase2()
-        case "Vordt of the Boreal Valley":
-            vordtBorealValley_phase2()
-        case "Crystal Sage":
-            crystalSage_phase2()
-        case "Abyss Watchers":
-            abyssWatchers_phase2()
-        case "Pontiff Sulyvahn":
-            pontiffSulyvahn_phase2()
-        case "Yhorm the Giant":
-            yhormGiant_phase2()
-        case "Soul of Cinder":
-            soulCinder_phase2()
-
-def iudexGundyr_phase2():
-    real_boss_damage *= 1.1
-def vordtBorealValley_phase2():
-    pass
-def crystalSage_phase2():
-    pass
-def abyssWatchers_phase2():
-    pass
-def pontiffSulyvahn_phase2():
-    pass
-def yhormGiant_phase2():
-    pass
-def soulCinder_phase2():
-    pass
+    )        
 
 def fight():
     global estus_flask_count
@@ -350,7 +323,9 @@ def fight():
     global boss_phase2_defeated_reignite
     global boss_phase2_defeated_extinguish
     global phase_2_active
-    global phase_2
+    global phase_2_stat_modified
+    global phase_2_text_part1
+    global phase_2_text_part2
     boss_current_HP = player_boss.HP
     player_current_HP = player_champion.HP
     player_current_stamina = player_champion.stamina
@@ -369,7 +344,9 @@ def fight():
         sleep(1)
     skip()
 
+
     while True:
+
         if player_champion.damage_type in player_boss.damage_resistance:
             real_champ_damage = player_champion.damage * 0.8
             damage_champ_text = f"{player_champion.name}'s attack proves less potent, dealing only {int(real_champ_damage)} damage."
@@ -425,17 +402,27 @@ def fight():
                             player_current_HP -= (real_boss_damage * 0.5)
                             print(f"{player_boss.name} counter attacks, dealing {int(real_boss_damage * 0.5)} damage to {player_champion.name}!")
                             skip()
+                            if player_current_HP <= 0 and phase_2_active == True:
+                                print(boss_phase2_win_text)
+                                sleep(3)
+                                skip()
+                                exit_game()
+                            elif player_current_HP <= 0:
+                                print(boss_win_text)
+                                sleep(3)
+                                skip()
+                                exit_game()
                         else:
                             if determination_active and exalted_flesh_active:
                                 clear_screen()
-                                boosted_damage = real_champ_damage * 1.5 * 1.2
+                                boosted_damage = real_champ_damage * 1.2 * 1.2
                                 player_current_stamina -= 30
                                 boss_current_HP -= boosted_damage
                                 print(f"{player_champion.name} strikes with fury and determination, dealing {int(boosted_damage)} damage!")
                                 skip()
                             elif determination_active:
                                 clear_screen()
-                                boosted_damage = real_champ_damage * 1.5
+                                boosted_damage = real_champ_damage * 1.2
                                 player_current_stamina -= 30
                                 boss_current_HP -= boosted_damage
                                 print(f"{player_champion.name} strikes with determination, dealing {int(boosted_damage)} damage!")
@@ -453,16 +440,6 @@ def fight():
                                 boss_current_HP -= real_champ_damage
                                 print(damage_champ_text)
                                 skip()
-
-                        if phase_2_active == False and boss_current_HP <= 0 and (player_boss.name == "Soul of Cinder" or player_boss.name == "Abyss Watchers"):
-                            print(phase_2_text)
-                            # Phase 2 checker
-                            if phase_2_active == False and phase_2:
-                                phase_2_active = True
-                                phase2Modifier()
-                        elif boss_current_HP <= (boss_current_HP * 0.5):
-                            print(phase_2_text)
-
                     else:
                         clear_screen()
                         print("Not enough stamina to attack!")
@@ -489,8 +466,8 @@ def fight():
                             player_current_stamina -= 60
                             special_move_ready = False
                             special_move_cooldown = 0
-                            boss_current_HP -= player_champion.damage * 2
-                            print(f"The Assassin vanishes in a blur, his blade seeking the cracks in armor.\n{player_boss.name} got criticaly hit for {player_champion.damage * 2} damage!")
+                            boss_current_HP -= player_champion.damage * 2.5
+                            print(f"The Assassin vanishes in a blur, his blade seeking the cracks in armor.\n{player_boss.name} got criticaly hit for {int(player_champion.damage * 2.5)} damage!")
                             skip()
                         elif player_champion.name == "Sorcerer":
                             moon_damage = real_champ_damage + player_current_stamina * 1.75
@@ -521,7 +498,6 @@ def fight():
                         print("Not enough stamina to perform special move!")
                         skip()
                         clear_screen()
-
                 elif attack_choice == '3':
                     clear_screen()
                     continue
@@ -582,6 +558,7 @@ def fight():
                     print("Invalid input. Try again.\n")
                     skip()
 
+            # Skip attack
             elif player_action == '3':
                 clear_screen()
                 print(f"{player_champion.name} needs to gather strenght for next attack.")
@@ -591,50 +568,520 @@ def fight():
                 clear_screen()
                 print("Invalid input. Try again.\n")
                 skip()
-                
-            if boss_current_HP <= 0:
-                clear_screen()
-                print(boss_defeated_text)
-                sleep(3)
-                skip()
-                exit_game()
-
-        # Boss's turn
-        if shield_bash_stagger:
-            print(f"{player_boss.name} stands back on its feet, ready for next attack.")
-            shield_bash_stagger = False
-            skip()
-        else:
-            evade_chance = r.randint(1,101)
             
-            if player_current_stamina >= 20 and evade_chance <= player_champion.evade:
-                print(f"{player_champion.name} evades {player_boss.name}'s attack!")
-                skip()
-            else:
-                if counter_attack:
-                    counter_damage_player = (real_champ_damage * 1.75)
-                    counter_damage_boss = (real_boss_damage/3)
-                    player_current_HP -= counter_damage_boss
-                    boss_current_HP -= counter_damage_player
-                    print(f"{player_champion.name} counters {player_boss.name} attack, slashing him for {int(counter_damage_player)} damage.\n{player_champion.name} is wounded only for {int(counter_damage_boss)} damage.")
-                    skip()
-                else:
-                    player_current_HP -= real_boss_damage
-                    print(damage_boss_text)
-                    skip()
-
-            if player_current_HP <= 0:
-                print(boss_win_text)
-                sleep(3)
-                skip()
-                exit_game()
-    
-            if boss_current_HP <= 0:
+            # Boss dead checker and phase 2 activator
+            if difficulty_mode == "Normal":
+                if boss_current_HP <= 0:
                     clear_screen()
                     print(boss_defeated_text)
                     sleep(3)
                     skip()
                     exit_game()
+            else: # Difficulty Hard
+                if phase_2_active == True and boss_current_HP <= 0:
+                    clear_screen()
+                    print(boss_phase2_defeated_text)
+                    sleep(3)
+                    skip()
+                    exit_game()
+                else:
+                    if (player_boss.name == "Soul of Cinder" or player_boss.name == "Abyss Watchers") and boss_current_HP <= 0:
+                        phase_2_active = True
+                        boss_current_HP = player_boss.HP
+                        print(phase_2_text_part1,end="",flush=True)
+                        for i in range(3):
+                            print(".", end="", flush=True)
+                            sleep(1.5)
+                        print(phase_2_text_part2)
+                        sleep(3)
+                        skip()
+                    elif boss_current_HP <= (player_boss.HP*0.5) and phase_2_active == False and player_boss.name not in ["Abyss Watchers", "Soul of Cinder"]:
+                        phase_2_active = True
+                        print(phase_2_text_part1,end="",flush=True)
+                        for i in range(3):
+                            print(".", end="", flush=True)
+                            sleep(1.5)
+                        print(phase_2_text_part2)
+                        sleep(3)
+                        skip()
+
+        # Boss's turn
+        match player_boss.name:
+            case "Iudex Gundyr":    # Iudex Gundyr ----------------------------------------------------
+                if phase_2_active == True:
+                    real_boss_damage = (real_boss_damage*1.1)
+
+                if player_boss.damage_type in player_champion.damage_resistance:
+                    damage_boss_text = f"{player_boss.name}'s attack lacks its usual strength, dealing only {int(real_boss_damage)} damage."
+                elif player_boss.damage_type in player_champion.damage_weakness:
+                    damage_boss_text = f"{player_champion.name} takes a heavy hit — {player_boss.name} deals {int(real_boss_damage)} damage."
+                else:
+                    damage_boss_text = f"{player_boss.name} hits {player_champion.name}, dealing {int(real_boss_damage)} damage."
+
+                if shield_bash_stagger:
+                    print(f"{player_boss.name} stands back on its feet, ready for next attack.")
+                    shield_bash_stagger = False
+                    skip()
+                else:
+                    evade_chance = r.randint(1,100)
+            
+                    if player_current_stamina >= 20 and evade_chance <= player_champion.evade:
+                        print(f"{player_champion.name} evades {player_boss.name}'s attack!")
+                        skip()
+                    else:
+                        if counter_attack:
+                            counter_damage_player = (real_champ_damage * 1.75)
+                            counter_damage_boss = (real_boss_damage/3)
+                            player_current_HP -= counter_damage_boss
+                            boss_current_HP -= counter_damage_player
+                            print(f"{player_champion.name} counters {player_boss.name} attack, slashing him for {int(counter_damage_player)} damage.\n{player_champion.name} is wounded only for {int(counter_damage_boss)} damage.")
+                            skip()
+                        else:
+                            player_current_HP -= real_boss_damage
+                            print(damage_boss_text)
+                            skip()
+
+                    if player_current_HP <= 0 and phase_2_active == True:
+                        print(boss_phase2_win_text)
+                        sleep(3)
+                        skip()
+                        exit_game()
+                    elif player_current_HP <= 0:
+                        print(boss_win_text)
+                        sleep(3)
+                        skip()
+                        exit_game()
+            
+                    if difficulty_mode == "Normal":
+                        if boss_current_HP <= 0:
+                            clear_screen()
+                            print(boss_defeated_text)
+                            sleep(3)
+                            skip()
+                            exit_game()
+                    else: # Difficulty Hard
+                        if phase_2_active and boss_current_HP <= 0:
+                            clear_screen()
+                            print(boss_phase2_defeated_text)
+                            sleep(3)
+                            skip()
+                            exit_game()
+                        else:
+                            if boss_current_HP <= (player_boss.HP*0.5):
+                                phase_2_active = True
+                                print(phase_2_text_part1,end="",flush=True)
+                                for i in range(3):
+                                    print(".", end="", flush=True)
+                                    sleep(1.5)
+                                print(phase_2_text_part2)
+
+            case "Vordt of the Boreal Valley": # Vordth of the Boreal Valley ----------------------------------------------------
+                if phase_2_active:
+                    pass
+
+                if player_boss.damage_type in player_champion.damage_resistance:
+                    damage_boss_text = f"{player_boss.name}'s attack lacks its usual strength, dealing only {int(real_boss_damage)} damage."
+                elif player_boss.damage_type in player_champion.damage_weakness:
+                    damage_boss_text = f"{player_champion.name} takes a heavy hit — {player_boss.name} deals {int(real_boss_damage)} damage."
+                else:
+                    damage_boss_text = f"{player_boss.name} hits {player_champion.name}, dealing {int(real_boss_damage)} damage."
+
+                if shield_bash_stagger:
+                    print(f"{player_boss.name} stands back on its feet, ready for next attack.")
+                    shield_bash_stagger = False
+                    skip()
+                else:
+                    evade_chance = r.randint(1,101)
+            
+                    if player_current_stamina >= 20 and evade_chance <= player_champion.evade:
+                        print(f"{player_champion.name} evades {player_boss.name}'s attack!")
+                        skip()
+                    else:
+                        if counter_attack:
+                            counter_damage_player = (real_champ_damage * 1.75)
+                            counter_damage_boss = (real_boss_damage/3)
+                            player_current_HP -= counter_damage_boss
+                            boss_current_HP -= counter_damage_player
+                            print(f"{player_champion.name} counters {player_boss.name} attack, slashing him for {int(counter_damage_player)} damage.\n{player_champion.name} is wounded only for {int(counter_damage_boss)} damage.")
+                            skip()
+                        else:
+                            player_current_HP -= real_boss_damage
+                            print(damage_boss_text)
+                            skip()
+
+                    if player_current_HP <= 0 and phase_2_active == True:
+                        print(boss_phase2_win_text)
+                        sleep(3)
+                        skip()
+                        exit_game()
+                    elif player_current_HP <= 0:
+                        print(boss_win_text)
+                        sleep(3)
+                        skip()
+                        exit_game()
+            
+                    if difficulty_mode == "Normal":
+                        if boss_current_HP <= 0:
+                            clear_screen()
+                            print(boss_defeated_text)
+                            sleep(3)
+                            skip()
+                            exit_game()
+                    else: # Difficulty Hard
+                        if phase_2_active and boss_current_HP <= 0:
+                            clear_screen()
+                            print(boss_phase2_defeated_text)
+                            sleep(3)
+                            skip()
+                            exit_game()
+                        else:
+                            if boss_current_HP <= (player_boss.HP*0.5):
+                                phase_2_active = True
+                                print(phase_2_text_part1,end="",flush=True)
+                                for i in range(3):
+                                    print(".", end="", flush=True)
+                                    sleep(1.5)
+                                print(phase_2_text_part2)
+
+            case "Crystal Sage": # Crystal Sage ----------------------------------------------------
+                if phase_2_active:
+                    pass
+
+                if player_boss.damage_type in player_champion.damage_resistance:
+                    damage_boss_text = f"{player_boss.name}'s attack lacks its usual strength, dealing only {int(real_boss_damage)} damage."
+                elif player_boss.damage_type in player_champion.damage_weakness:
+                    damage_boss_text = f"{player_champion.name} takes a heavy hit — {player_boss.name} deals {int(real_boss_damage)} damage."
+                else:
+                    damage_boss_text = f"{player_boss.name} hits {player_champion.name}, dealing {int(real_boss_damage)} damage."
+
+                if shield_bash_stagger:
+                    print(f"{player_boss.name} stands back on its feet, ready for next attack.")
+                    shield_bash_stagger = False
+                    skip()
+                else:
+                    evade_chance = r.randint(1,101)
+            
+                    if player_current_stamina >= 20 and evade_chance <= player_champion.evade:
+                        print(f"{player_champion.name} evades {player_boss.name}'s attack!")
+                        skip()
+                    else:
+                        if counter_attack:
+                            counter_damage_player = (real_champ_damage * 1.75)
+                            counter_damage_boss = (real_boss_damage/3)
+                            player_current_HP -= counter_damage_boss
+                            boss_current_HP -= counter_damage_player
+                            print(f"{player_champion.name} counters {player_boss.name} attack, slashing him for {int(counter_damage_player)} damage.\n{player_champion.name} is wounded only for {int(counter_damage_boss)} damage.")
+                            skip()
+                        else:
+                            player_current_HP -= real_boss_damage
+                            print(damage_boss_text)
+                            skip()
+
+                    if player_current_HP <= 0 and phase_2_active == True:
+                        print(boss_phase2_win_text)
+                        sleep(3)
+                        skip()
+                        exit_game()
+                    elif player_current_HP <= 0:
+                        print(boss_win_text)
+                        sleep(3)
+                        skip()
+                        exit_game()
+            
+                    if difficulty_mode == "Normal":
+                        if boss_current_HP <= 0:
+                            clear_screen()
+                            print(boss_defeated_text)
+                            sleep(3)
+                            skip()
+                            exit_game()
+                    else: # Difficulty Hard
+                        if phase_2_active and boss_current_HP <= 0:
+                            clear_screen()
+                            print(boss_phase2_defeated_text)
+                            sleep(3)
+                            skip()
+                            exit_game()
+                        else:
+                            if boss_current_HP <= (player_boss.HP*0.5):
+                                phase_2_active = True
+                                print(phase_2_text_part1,end="",flush=True)
+                                for i in range(3):
+                                    print(".", end="", flush=True)
+                                    sleep(1.5)
+                                print(phase_2_text_part2)
+
+            case "Abyss Watchers": # Abyss Watchers ----------------------------------------------------
+                if phase_2_active:
+                    phase_2_stat_modified = True
+            
+                if player_boss.damage_type in player_champion.damage_resistance:
+                    damage_boss_text = f"{player_boss.name}'s attack lacks its usual strength, dealing only {int(real_boss_damage)} damage."
+                elif player_boss.damage_type in player_champion.damage_weakness:
+                    damage_boss_text = f"{player_champion.name} takes a heavy hit — {player_boss.name} deals {int(real_boss_damage)} damage."
+                else:
+                    damage_boss_text = f"{player_boss.name} hits {player_champion.name}, dealing {int(real_boss_damage)} damage."
+
+                if shield_bash_stagger:
+                    print(f"{player_boss.name} stands back on its feet, ready for next attack.")
+                    shield_bash_stagger = False
+                    skip()
+                else:
+                    evade_chance = r.randint(1,101)
+            
+                    if player_current_stamina >= 20 and evade_chance <= player_champion.evade:
+                        print(f"{player_champion.name} evades {player_boss.name}'s attack!")
+                        skip()
+                    else:
+                        if counter_attack:
+                            counter_damage_player = (real_champ_damage * 1.75)
+                            counter_damage_boss = (real_boss_damage/3)
+                            player_current_HP -= counter_damage_boss
+                            boss_current_HP -= counter_damage_player
+                            print(f"{player_champion.name} counters {player_boss.name} attack, slashing him for {int(counter_damage_player)} damage.\n{player_champion.name} is wounded only for {int(counter_damage_boss)} damage.")
+                            skip()
+                        else:
+                            player_current_HP -= real_boss_damage
+                            print(damage_boss_text)
+                            skip()
+
+                    if player_current_HP <= 0 and phase_2_active == True:
+                        print(boss_phase2_win_text)
+                        sleep(3)
+                        skip()
+                        exit_game()
+                    elif player_current_HP <= 0:
+                        print(boss_win_text)
+                        sleep(3)
+                        skip()
+                        exit_game()
+            
+                    if difficulty_mode == "Normal":
+                        if boss_current_HP <= 0:
+                            clear_screen()
+                            print(boss_defeated_text)
+                            sleep(3)
+                            skip()
+                            exit_game()
+                    else: # Difficulty Hard
+                        if phase_2_active and boss_current_HP <= 0:
+                            clear_screen()
+                            print(boss_phase2_defeated_text)
+                            sleep(3)
+                            skip()
+                            exit_game()
+                        else:
+                            if boss_current_HP <= 0:
+                                phase_2_active = True
+                                boss_current_HP = player_boss.HP
+                                print(phase_2_text_part1,end="",flush=True)
+                                for i in range(3):
+                                    print(".", end="", flush=True)
+                                    sleep(1.5)
+                                print(phase_2_text_part2)
+
+            case "Pontiff Sulyvahn": # Pontiff Sulyvahn ----------------------------------------------------
+                if phase_2_active:
+                    pass
+                
+                if player_boss.damage_type in player_champion.damage_resistance:
+                    damage_boss_text = f"{player_boss.name}'s attack lacks its usual strength, dealing only {int(real_boss_damage)} damage."
+                elif player_boss.damage_type in player_champion.damage_weakness:
+                    damage_boss_text = f"{player_champion.name} takes a heavy hit — {player_boss.name} deals {int(real_boss_damage)} damage."
+                else:
+                    damage_boss_text = f"{player_boss.name} hits {player_champion.name}, dealing {int(real_boss_damage)} damage."
+
+                if shield_bash_stagger:
+                    print(f"{player_boss.name} stands back on its feet, ready for next attack.")
+                    shield_bash_stagger = False
+                    skip()
+                else:
+                    evade_chance = r.randint(1,101)
+            
+                    if player_current_stamina >= 20 and evade_chance <= player_champion.evade:
+                        print(f"{player_champion.name} evades {player_boss.name}'s attack!")
+                        skip()
+                    else:
+                        if counter_attack:
+                            counter_damage_player = (real_champ_damage * 1.75)
+                            counter_damage_boss = (real_boss_damage/3)
+                            player_current_HP -= counter_damage_boss
+                            boss_current_HP -= counter_damage_player
+                            print(f"{player_champion.name} counters {player_boss.name} attack, slashing him for {int(counter_damage_player)} damage.\n{player_champion.name} is wounded only for {int(counter_damage_boss)} damage.")
+                            skip()
+                        else:
+                            player_current_HP -= real_boss_damage
+                            print(damage_boss_text)
+                            skip()
+
+                    if player_current_HP <= 0 and phase_2_active == True:
+                        print(boss_phase2_win_text)
+                        sleep(3)
+                        skip()
+                        exit_game()
+                    elif player_current_HP <= 0:
+                        print(boss_win_text)
+                        sleep(3)
+                        skip()
+                        exit_game()
+            
+                    if difficulty_mode == "Normal":
+                        if boss_current_HP <= 0:
+                            clear_screen()
+                            print(boss_defeated_text)
+                            sleep(3)
+                            skip()
+                            exit_game()
+                    else: # Difficulty Hard
+                        if phase_2_active and boss_current_HP <= 0:
+                            clear_screen()
+                            print(boss_phase2_defeated_text)
+                            sleep(3)
+                            skip()
+                            exit_game()
+                        else:
+                            if boss_current_HP <= (player_boss.HP*0.5):
+                                phase_2_active = True
+                                print(phase_2_text_part1,end="",flush=True)
+                                for i in range(3):
+                                    print(".", end="", flush=True)
+                                    sleep(1.5)
+                                print(phase_2_text_part2)
+            case "Yhorm the Giant": # Yhorm the Giant ----------------------------------------------------
+                if phase_2_active:
+                    pass
+               
+                if player_boss.damage_type in player_champion.damage_resistance:
+                    damage_boss_text = f"{player_boss.name}'s attack lacks its usual strength, dealing only {int(real_boss_damage)} damage."
+                elif player_boss.damage_type in player_champion.damage_weakness:
+                    damage_boss_text = f"{player_champion.name} takes a heavy hit — {player_boss.name} deals {int(real_boss_damage)} damage."
+                else:
+                    damage_boss_text = f"{player_boss.name} hits {player_champion.name}, dealing {int(real_boss_damage)} damage."
+
+                if shield_bash_stagger:
+                    print(f"{player_boss.name} stands back on its feet, ready for next attack.")
+                    shield_bash_stagger = False
+                    skip()
+                else:
+                    evade_chance = r.randint(1,101)
+            
+                    if player_current_stamina >= 20 and evade_chance <= player_champion.evade:
+                        print(f"{player_champion.name} evades {player_boss.name}'s attack!")
+                        skip()
+                    else:
+                        if counter_attack:
+                            counter_damage_player = (real_champ_damage * 1.75)
+                            counter_damage_boss = (real_boss_damage/3)
+                            player_current_HP -= counter_damage_boss
+                            boss_current_HP -= counter_damage_player
+                            print(f"{player_champion.name} counters {player_boss.name} attack, slashing him for {int(counter_damage_player)} damage.\n{player_champion.name} is wounded only for {int(counter_damage_boss)} damage.")
+                            skip()
+                        else:
+                            player_current_HP -= real_boss_damage
+                            print(damage_boss_text)
+                            skip()
+
+                    if player_current_HP <= 0 and phase_2_active == True:
+                        print(boss_phase2_win_text)
+                        sleep(3)
+                        skip()
+                        exit_game()
+                    elif player_current_HP <= 0:
+                        print(boss_win_text)
+                        sleep(3)
+                        skip()
+                        exit_game()
+            
+                    if difficulty_mode == "Normal":
+                        if boss_current_HP <= 0:
+                            clear_screen()
+                            print(boss_defeated_text)
+                            sleep(3)
+                            skip()
+                            exit_game()
+                    else: # Difficulty Hard
+                        if phase_2_active and boss_current_HP <= 0:
+                            clear_screen()
+                            print(boss_phase2_defeated_text)
+                            sleep(3)
+                            skip()
+                            exit_game()
+                        else:
+                            if boss_current_HP <= (player_boss.HP*0.5):
+                                phase_2_active = True
+                                print(phase_2_text_part1,end="",flush=True)
+                                for i in range(3):
+                                    print(".", end="", flush=True)
+                                    sleep(1.5)
+                                print(phase_2_text_part2)
+            case "Soul of Cinder": # Soul of Cinder ----------------------------------------------------
+                if phase_2_active:
+                    phase_2_stat_modified = True
+            
+                if player_boss.damage_type in player_champion.damage_resistance:
+                    damage_boss_text = f"{player_boss.name}'s attack lacks its usual strength, dealing only {int(real_boss_damage)} damage."
+                elif player_boss.damage_type in player_champion.damage_weakness:
+                    damage_boss_text = f"{player_champion.name} takes a heavy hit — {player_boss.name} deals {int(real_boss_damage)} damage."
+                else:
+                    damage_boss_text = f"{player_boss.name} hits {player_champion.name}, dealing {int(real_boss_damage)} damage."
+
+                if shield_bash_stagger:
+                    print(f"{player_boss.name} stands back on its feet, ready for next attack.")
+                    shield_bash_stagger = False
+                    skip()
+                else:
+                    evade_chance = r.randint(1,101)
+            
+                    if player_current_stamina >= 20 and evade_chance <= player_champion.evade:
+                        print(f"{player_champion.name} evades {player_boss.name}'s attack!")
+                        skip()
+                    else:
+                        if counter_attack:
+                            counter_damage_player = (real_champ_damage * 1.75)
+                            counter_damage_boss = (real_boss_damage/3)
+                            player_current_HP -= counter_damage_boss
+                            boss_current_HP -= counter_damage_player
+                            print(f"{player_champion.name} counters {player_boss.name} attack, slashing him for {int(counter_damage_player)} damage.\n{player_champion.name} is wounded only for {int(counter_damage_boss)} damage.")
+                            skip()
+                        else:
+                            player_current_HP -= real_boss_damage
+                            print(damage_boss_text)
+                            skip()
+
+                    if player_current_HP <= 0 and phase_2_active == True:
+                        print(boss_phase2_win_text)
+                        sleep(3)
+                        skip()
+                        exit_game()
+                    elif player_current_HP <= 0:
+                        print(boss_win_text)
+                        sleep(3)
+                        skip()
+                        exit_game()
+            
+                    if difficulty_mode == "Normal":
+                        if boss_current_HP <= 0:
+                            clear_screen()
+                            print(boss_defeated_text)
+                            sleep(3)
+                            skip()
+                            exit_game()
+                    else: # Difficulty Hard
+                        if phase_2_active and boss_current_HP <= 0:
+                            clear_screen()
+                            print(boss_phase2_defeated_text)
+                            sleep(3)
+                            skip()
+                            exit_game()
+                        else:
+                            if boss_current_HP <= 0:
+                                phase_2_active = True
+                                boss_current_HP = player_boss.HP
+                                print(phase_2_text_part1,end="",flush=True)
+                                for i in range(3):
+                                    print(".", end="", flush=True)
+                                    sleep(1.5)
+                                print(phase_2_text_part2)
                     
         exalted_flesh_active = False
         shield_bash_stagger = False
@@ -644,7 +1091,7 @@ def fight():
         special_move_cooldown += 1
         if special_move_cooldown == 3:
             special_move_ready = True
-            special_move_cooldown = 0        
+            special_move_cooldown = 0
         clear_screen()
 
 # The game ----------------------------------------
