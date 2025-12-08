@@ -1,5 +1,10 @@
-# Copyright (c) 2025 Luboš Kulhan (aka Adam Kaiser, GitHub: Kulhy7)
-# Licensed under MIT License
+# Copyright (c) 2025 Luboš Kulhan
+# Licensed under the MIT License.
+#
+# This is a non-commercial fan project inspired by the Dark Souls series
+# by FromSoftware. All Dark Souls names, characters, and content belong
+# to their respective owners.
+
 
 # ==============================================
 #  Program: Dark Souls 3 Pantheon
