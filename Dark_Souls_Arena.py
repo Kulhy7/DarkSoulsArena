@@ -72,23 +72,23 @@ class Boss:
 
 # Champions ----------------------------------------
 champions = [
-    Champion("Knight", 150,80,100,30,"Standard","Slash","Strike/Magic"),
-    Champion("Paladin", 200,60,110,20,"Strike","Slash/Holy","Strike/Magic"),
-    Champion("Assassin", 120,100,90,50,"Slash","Strike/Magic","Slash/Fire"),
-    Champion("Sorcerer", 110,120,90,30,"Magic","Magic","Slash/Fire"),
-    Champion("Samurai", 130,80,100,35,"Slash","Strike","Magic/Fire"),
-    Champion("Pyromancer", 110,90,90,30,"Fire","Fire","Slash/Holy")
+    Champion("Knight", 150,80,100,40,"Standard","Slash","Strike/Magic"),
+    Champion("Paladin", 200,60,110,30,"Strike","Slash/Holy","Strike/Magic"),
+    Champion("Assassin", 120,100,90,70,"Slash","Strike/Magic","Slash/Fire"),
+    Champion("Sorcerer", 110,120,90,40,"Magic","Magic","Slash/Fire"),
+    Champion("Samurai", 130,80,100,50,"Slash","Strike","Magic/Fire"),
+    Champion("Pyromancer", 110,90,90,40,"Fire","Fire","Slash/Holy")
 ]
 
 # Bosses ----------------------------------------
 bosses = [
-    Boss("Iudex Gundyr",1500,40,10,"Standard","Slash/Holy","Strike/Magic"),
+    Boss("Iudex Gundyr",1300,40,10,"Standard","Slash/Holy","Strike/Magic"),
     Boss("Vordt of the Boreal Valley",1500,40,0,"Strike","Slash","Strike"),
     Boss("Crystal Sage",1250,60,15,"Magic","Magic","Slash/Fire"),
-    Boss("Abyss Watchers",750,50,20,"Standard","Magic","Slash/Fire"),
+    Boss("Abyss Watchers",800,50,20,"Standard","Magic","Slash/Fire"),
     Boss("Pontiff Sulyvahn",1600,50,20,"Fire","Slash","Strike/Magic"),
     Boss("Yhorm the Giant",2000,50,0,"Standard","Slash","Strike"),
-    Boss("Soul of Cinder",1000,60,15,"Fire","Fire","Strike/Magic")
+    Boss("Soul of Cinder",1500,60,15,"Fire","Fire","Strike/Magic")
 ]
 
 # Functions ----------------------------------------
@@ -181,6 +181,7 @@ def choose_champion_boss():     # Function to choose champion and boss
             clear_screen()
             print("Invalid input. Try again.\n")
             skip()
+
 def champion_list():    # Function to display champion list
     print("List of Champions:\n")
     print("Knight\nOnce a proud guardian of a fallen kingdom, he now roams the ash-choked lands, bound by memory and regret.\nWeapon: Broadsword\n")
@@ -189,7 +190,7 @@ def champion_list():    # Function to display champion list
     print("Sorcerer\nScholar consumed by the very sorcery she wanted to master, her soul flickering like dying embers.\nWeapon: Staff\n")
     print("Samurai\nSwordsman who perfected his art at the cost of his humanity, now bound to the dance of endless battle.\nWeapon: Uchigatana\n")
     print("Pyromancer\nOnce a Fire Keeper, she broke her sacred vow and embraced the flame’s forbidden touch. Now she burns eternally, neither servant nor savior.\nWeapong: Pyromancy Flame\n")
-    skip()
+    skip()   
 def boss_list():    # Function to display boss list
     print("List of Bosses:\n")
     print("Iudex Gundyr\nOnce a judge of the First Flame, he now stands forever at the threshold, his halberd stained with the blood of uncounted challengers.\n")
@@ -216,7 +217,7 @@ def damage_types():
     print("Fire\nFlames that burn and sear, capable of rending flesh and spirit; less effective against flame followers and demons alike.\n")
     skip()
 def credits():
-    print("Game made by Luboš Kulhan.\nLast update in 2025-12-08.")
+    print("Game made by Luboš Kulhan.\nLast update in 2025-12-09.")
     skip()
 
 def boss_text(boss,champion):
@@ -237,7 +238,7 @@ def boss_text(boss,champion):
             boss_phase2_win_text = f"{champion} falls, overwhelmed by the relentless fury of {boss}. No mercy remains — only the echoes of judgment endure."
             boss_phase2_defeated_text = f"{boss} collapses at last, shattered by the unkindled's resolve. As his form dissolves to ash, {champion} perceives the lingering judgment slowly fading into stillness."
             phase_2_text_part1 = f"{boss} falls to one knee, trembling"
-            phase_2_text_part2 = " then rises anew, his form twisted by black ichor. The silent judge is gone — only wrath remains."
+            phase_2_text_part2 = "then rises anew, his form twisted by black ichor. The silent judge is gone — only wrath remains."
         case "Vordt of the Boreal Valley":
             boss_intro = f"\nA chilling wind sweeps the air as {boss} emerges from the frost.\n"
             boss_win_text = f"{champion} is crushed beneath the icy fury of {boss}. The frozen beast bellows into the void, bound forever to his madness."
@@ -245,7 +246,7 @@ def boss_text(boss,champion):
             boss_phase2_win_text = f"{champion} is torn apart beneath the relentless onslaught of {boss}, each icy strike etching agony into flesh and bone."
             boss_phase2_defeated_text = f"{boss} finally falls, his monstrous howls echoing across the frozen valley. {champion} stands battered, yet the icy shadow lingers long after the roar fades."
             phase_2_text_part1 = f"{boss} falters, frost cracking across his massive frame"
-            phase_2_text_part2 = " his body enshrouded in a blizzard of icy wrath. The frozen beast's roar is relentless."
+            phase_2_text_part2 = "his body enshrouded in a blizzard of icy wrath. The frozen beast's roar is relentless."
         case "Crystal Sage":
             boss_intro = f"\nA hooded figure shuffles from the mist, staff cracked, robes tattered. {boss} mutters forgotten incantations.\n"
             boss_win_text = f"{champion} is unmade by a storm of crystal shards. The Sage’s hollow chant fades into silence."
@@ -253,15 +254,15 @@ def boss_text(boss,champion):
             boss_phase2_win_text = f"{champion} is torn asunder by the relentless barrage of crystalline magic. Each spell twists reality, leaving only disorientation and ruin in its wake."
             boss_phase2_defeated_text = f"{boss} collapses, fragments of light scattering like broken time itself. {champion} barely stands, the echoes of arcane fury still ringing in their ears."
             phase_2_text_part1 = f"{boss} fractures, her form splitting into twin apparitions. One real, one false—both wield the same deadly sorcery"
-            phase_2_text_part2 = " the Sage's deception begins."
+            phase_2_text_part2 = "the Sage's deception begins."
         case "Abyss Watchers":
             boss_intro = f"\nA chorus of clashing steel echoes through the dark as {boss} surge forward.\n"
             boss_win_text = f"{champion} is overwhelmed by the frenzied blades of {boss}. Their cursed vigil continues, unbroken and unyielding."
             boss_defeated_text = f"{boss} falters, their final clash silenced at last. {champion} stands amidst the ashen remains of a brotherhood lost to darkness."
-            boss_phase2_win_text = f"{champion} is cut down by the relentless coordination of {boss}, each strike precise, merciless, and unrelenting."
+            boss_phase2_win_text = f"{champion} is cut down by the relentless coordination of Abyss Watcher, each strike precise, merciless, and unrelenting."
             boss_phase2_defeated_text = f"{boss} crumbles, their abyssal flame snuffed out. {champion} stands weary, the shadows of their brotherhood lingering long after the fight."
             phase_2_text_part1 = f"As the last Abyss Watcher falls, the {champion} stands victorious"
-            phase_2_text_part2 = " then the souls of the fallen gather, filling an empty vessel. From it, one final Abyss Watcher rises, filled with the suffering and fury of his fallen brothers."
+            phase_2_text_part2 = "then the souls of the fallen gather, filling an empty vessel. From it, one final Abyss Watcher rises, filled with the suffering and fury of his fallen brothers."
         case "Pontiff Sulyvahn":
             boss_intro = f"\nTwin swords gleam in the dim light as {boss} descends, a crownless sovereign of fire and deceit.\n"
             boss_win_text = f"{champion} falls beneath the merciless onslaught of {boss}. The Pontiff’s dominion persists, cruel and unchallenged."
@@ -269,7 +270,7 @@ def boss_text(boss,champion):
             boss_phase2_win_text = f"{champion} is overwhelmed by {boss}'s relentless assault, each strike a cold testament to power corrupted. Mercy has long fled from this hall."
             boss_phase2_defeated_text = f"At last, {boss} crumbles, his silvered blades clattering to the ground. {champion} feels the oppressive weight of tyranny lift, if only for a moment."
             phase_2_text_part1 = f"{boss} falters, shadows twisting around him"
-            phase_2_text_part2 = " then he surges forth, twin swords blazing, swifter and deadlier than ever, each strike a storm of wrath and steel."
+            phase_2_text_part2 = "then he surges forth, twin swords blazing, swifter and deadlier than ever, each strike a storm of wrath and steel."
         case "Yhorm the Giant":
             boss_intro = f"\nThe ground trembles with each step as {boss} rises.\n"
             boss_win_text = f"{champion} is crushed beneath the towering might of {boss}. His sorrowful roar echoes across the desolate land."
@@ -277,7 +278,7 @@ def boss_text(boss,champion):
             boss_phase2_win_text = f"{champion} is incinerated in {boss}'s profane inferno. The giant's grief consumes all."
             boss_phase2_defeated_text = f"{boss} falls silent, profane flames guttering to ash. {champion} stands over the broken throne, storm fading."
             phase_2_text_part1 = f"{boss} staggers, clutching his chest"
-            phase_2_text_part2 = " then roars in anguish. Profane flame erupts from his wounds, storm clouds gathering above. The betrayed lord unleashes his final fury."
+            phase_2_text_part2 = "then roars in anguish. Profane flame erupts from his wounds, storm clouds gathering above. The betrayed lord unleashes his final fury."
         case "Soul of Cinder":
             boss_intro = f"\nThe echo of countless fallen souls whispers as {boss} approaches.\n"
             boss_win_text = f"{champion} falls, their flame extinguished. {boss} roams once more, awaiting the next challenger."
@@ -289,7 +290,7 @@ def boss_text(boss,champion):
                 phase_2_text_part1 = "Plim Plim Plom, Plim Plom Plim, Plim Plom"
             else:
                 phase_2_text_part1 = f"{boss} crumbles to ash"
-                phase_2_text_part2 = " then reignites with blinding fury. Gwyn's soul dominates—the progenitor of flame rejects defeat."
+                phase_2_text_part2 = "then reignites with blinding fury. Gwyn's soul dominates—the progenitor of flame rejects defeat."
 
     return (
         boss_intro or "",
@@ -302,6 +303,15 @@ def boss_text(boss,champion):
         boss_phase2_defeated_reignite or "",
         boss_phase2_defeated_extinguish or ""
     )        
+
+def boss_phase_2_tansition():
+    print(phase_2_text_part1,end="",flush=True)
+    for i in range(3):
+        print(".", end="", flush=True)
+        sleep(1.5)
+    print(f"\n{phase_2_text_part2}")
+    sleep(3)
+    skip()
 
 def fight():
     global estus_flask_count
@@ -343,7 +353,6 @@ def fight():
         print(".")
         sleep(1)
     skip()
-
 
     while True:
 
@@ -585,25 +594,15 @@ def fight():
                     skip()
                     exit_game()
                 else:
-                    if (player_boss.name == "Soul of Cinder" or player_boss.name == "Abyss Watchers") and boss_current_HP <= 0:
-                        phase_2_active = True
-                        boss_current_HP = player_boss.HP
-                        print(phase_2_text_part1,end="",flush=True)
-                        for i in range(3):
-                            print(".", end="", flush=True)
-                            sleep(1.5)
-                        print(phase_2_text_part2)
-                        sleep(3)
-                        skip()
-                    elif boss_current_HP <= (player_boss.HP*0.5) and phase_2_active == False and player_boss.name not in ["Abyss Watchers", "Soul of Cinder"]:
-                        phase_2_active = True
-                        print(phase_2_text_part1,end="",flush=True)
-                        for i in range(3):
-                            print(".", end="", flush=True)
-                            sleep(1.5)
-                        print(phase_2_text_part2)
-                        sleep(3)
-                        skip()
+                    if phase_2_active == False:
+
+                        if (player_boss.name == "Soul of Cinder" or player_boss.name == "Abyss Watchers") and boss_current_HP <= 0:
+                            phase_2_active = True
+                            boss_current_HP = player_boss.HP
+                            boss_phase_2_tansition()
+                        elif boss_current_HP <= (player_boss.HP*0.5) and (player_boss.name not in ["Abyss Watchers", "Soul of Cinder"]):
+                            phase_2_active = True
+                            boss_phase_2_tansition()
 
         # Boss's turn
         match player_boss.name:
@@ -651,7 +650,7 @@ def fight():
                         sleep(3)
                         skip()
                         exit_game()
-            
+
                     if difficulty_mode == "Normal":
                         if boss_current_HP <= 0:
                             clear_screen()
@@ -660,20 +659,15 @@ def fight():
                             skip()
                             exit_game()
                     else: # Difficulty Hard
-                        if phase_2_active and boss_current_HP <= 0:
+                        if boss_current_HP <= 0:
                             clear_screen()
                             print(boss_phase2_defeated_text)
                             sleep(3)
                             skip()
                             exit_game()
-                        else:
-                            if boss_current_HP <= (player_boss.HP*0.5):
-                                phase_2_active = True
-                                print(phase_2_text_part1,end="",flush=True)
-                                for i in range(3):
-                                    print(".", end="", flush=True)
-                                    sleep(1.5)
-                                print(phase_2_text_part2)
+                        elif phase_2_active == False and (boss_current_HP <= (player_boss.HP*0.5)):
+                            phase_2_active = True
+                            boss_phase_2_tansition()
 
             case "Vordt of the Boreal Valley": # Vordth of the Boreal Valley ----------------------------------------------------
                 if phase_2_active:
@@ -728,20 +722,15 @@ def fight():
                             skip()
                             exit_game()
                     else: # Difficulty Hard
-                        if phase_2_active and boss_current_HP <= 0:
+                        if boss_current_HP <= 0:
                             clear_screen()
                             print(boss_phase2_defeated_text)
                             sleep(3)
                             skip()
                             exit_game()
-                        else:
-                            if boss_current_HP <= (player_boss.HP*0.5):
-                                phase_2_active = True
-                                print(phase_2_text_part1,end="",flush=True)
-                                for i in range(3):
-                                    print(".", end="", flush=True)
-                                    sleep(1.5)
-                                print(phase_2_text_part2)
+                        elif phase_2_active == False and (boss_current_HP <= (player_boss.HP*0.5)):
+                            phase_2_active = True
+                            boss_phase_2_tansition()
 
             case "Crystal Sage": # Crystal Sage ----------------------------------------------------
                 if phase_2_active:
@@ -796,20 +785,15 @@ def fight():
                             skip()
                             exit_game()
                     else: # Difficulty Hard
-                        if phase_2_active and boss_current_HP <= 0:
+                        if boss_current_HP <= 0:
                             clear_screen()
                             print(boss_phase2_defeated_text)
                             sleep(3)
                             skip()
                             exit_game()
-                        else:
-                            if boss_current_HP <= (player_boss.HP*0.5):
-                                phase_2_active = True
-                                print(phase_2_text_part1,end="",flush=True)
-                                for i in range(3):
-                                    print(".", end="", flush=True)
-                                    sleep(1.5)
-                                print(phase_2_text_part2)
+                        elif phase_2_active == False and (boss_current_HP <= (player_boss.HP*0.5)):
+                            phase_2_active = True
+                            boss_phase_2_tansition()
 
             case "Abyss Watchers": # Abyss Watchers ----------------------------------------------------
                 if phase_2_active:
@@ -864,21 +848,16 @@ def fight():
                             skip()
                             exit_game()
                     else: # Difficulty Hard
-                        if phase_2_active and boss_current_HP <= 0:
+                        if boss_current_HP <= 0 and phase_2_active == True:
                             clear_screen()
                             print(boss_phase2_defeated_text)
                             sleep(3)
                             skip()
                             exit_game()
-                        else:
-                            if boss_current_HP <= 0:
-                                phase_2_active = True
-                                boss_current_HP = player_boss.HP
-                                print(phase_2_text_part1,end="",flush=True)
-                                for i in range(3):
-                                    print(".", end="", flush=True)
-                                    sleep(1.5)
-                                print(phase_2_text_part2)
+                        elif phase_2_active == False and boss_current_HP <= 0:
+                            boss_current_HP = player_boss.HP
+                            phase_2_active = True
+                            boss_phase_2_tansition()
 
             case "Pontiff Sulyvahn": # Pontiff Sulyvahn ----------------------------------------------------
                 if phase_2_active:
@@ -933,20 +912,16 @@ def fight():
                             skip()
                             exit_game()
                     else: # Difficulty Hard
-                        if phase_2_active and boss_current_HP <= 0:
+                        if boss_current_HP <= 0:
                             clear_screen()
                             print(boss_phase2_defeated_text)
                             sleep(3)
                             skip()
                             exit_game()
-                        else:
-                            if boss_current_HP <= (player_boss.HP*0.5):
-                                phase_2_active = True
-                                print(phase_2_text_part1,end="",flush=True)
-                                for i in range(3):
-                                    print(".", end="", flush=True)
-                                    sleep(1.5)
-                                print(phase_2_text_part2)
+                        elif phase_2_active == False and (boss_current_HP <= (player_boss.HP*0.5)):
+                            phase_2_active = True
+                            boss_phase_2_tansition()
+
             case "Yhorm the Giant": # Yhorm the Giant ----------------------------------------------------
                 if phase_2_active:
                     pass
@@ -1000,20 +975,16 @@ def fight():
                             skip()
                             exit_game()
                     else: # Difficulty Hard
-                        if phase_2_active and boss_current_HP <= 0:
+                        if boss_current_HP <= 0:
                             clear_screen()
                             print(boss_phase2_defeated_text)
                             sleep(3)
                             skip()
                             exit_game()
-                        else:
-                            if boss_current_HP <= (player_boss.HP*0.5):
-                                phase_2_active = True
-                                print(phase_2_text_part1,end="",flush=True)
-                                for i in range(3):
-                                    print(".", end="", flush=True)
-                                    sleep(1.5)
-                                print(phase_2_text_part2)
+                        elif phase_2_active == False and (boss_current_HP <= (player_boss.HP*0.5)):
+                            phase_2_active = True
+                            boss_phase_2_tansition()
+
             case "Soul of Cinder": # Soul of Cinder ----------------------------------------------------
                 if phase_2_active:
                     phase_2_stat_modified = True
@@ -1067,21 +1038,16 @@ def fight():
                             skip()
                             exit_game()
                     else: # Difficulty Hard
-                        if phase_2_active and boss_current_HP <= 0:
+                        if boss_current_HP <= 0 and phase_2_active == True:
                             clear_screen()
                             print(boss_phase2_defeated_text)
                             sleep(3)
                             skip()
                             exit_game()
-                        else:
-                            if boss_current_HP <= 0:
-                                phase_2_active = True
-                                boss_current_HP = player_boss.HP
-                                print(phase_2_text_part1,end="",flush=True)
-                                for i in range(3):
-                                    print(".", end="", flush=True)
-                                    sleep(1.5)
-                                print(phase_2_text_part2)
+                        elif phase_2_active == False and boss_current_HP <= 0:
+                            boss_current_HP = player_boss.HP
+                            phase_2_active = True
+                            boss_phase_2_tansition()
                     
         exalted_flesh_active = False
         shield_bash_stagger = False
