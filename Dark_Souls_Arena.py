@@ -243,6 +243,7 @@ def damage_types():
     print("Magic\nArcane energy woven from study and will, capable of piercing both body and mind; weak against foes hardened by magic.\n")
     print("Fire\nFlames that burn and sear, capable of rending flesh and spirit; less effective against flame followers and demons alike.\n")
     skip()
+
 def update_trophy(boss_name):
     trophy_file = "trophy.txt"
 
@@ -255,9 +256,9 @@ def update_trophy(boss_name):
             else:
                 trophies[name] = False
 
-    boss_tropy = f"{boss_name}_trophy"
-    if boss_tropy in trophies:
-        trophies[boss_tropy] = True
+    boss_trophy = f"{boss_name}"
+    if boss_trophy in trophies:
+        trophies[boss_trophy] = True
 
     with open(trophy_file, "w") as file:
         for name, value in trophies.items():
@@ -1125,7 +1126,7 @@ def fight():
         clear_screen()
 
 # The game ----------------------------------------
-update_trophy("Gundyr")
+update_trophy("Vordt of the Boreal Valley")
 clear_screen()
 while True:
     main_menu()
