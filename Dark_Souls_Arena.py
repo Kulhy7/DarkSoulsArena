@@ -38,13 +38,21 @@ phase_2_stat_modified = False
 difficulty_mode = "Normal"
 real_champ_damage = None
 real_boss_damage = None
+frost_on_player = 0
+Gundyr_trophy = False
+Vordt_trophy = False
+Sage_trophy = False
+Watchers_trophy = False
+Sulyvahn_trophy = False
+Yhorm_trophy = False
+SoC_trophy = False
 
 # Champion consumables ----------------------------------------
 estus_flask_heal = 90
 estus_flask_count = 3 # number of estus flasks available
-turtle_neck_recovery = 60
-turtle_neck_count = 2 # number of turtle necks available
-exalted_flesh_count = 2 # number of exalted fleshes available
+turtle_neck_recovery = 80
+turtle_neck_count = 1 # number of turtle necks available
+exalted_flesh_count = 1 # number of exalted fleshes available
 exalted_flesh_active = False # boost damage for 1 turn
 
 # Champion Class ----------------------------------------
@@ -65,28 +73,28 @@ class Boss:
         self.name = name
         self.HP = HP
         self.damage = damage
-        self.evade = evade
-        self.damage_type = damage_type  # Standard, Slash, Strike, Magic, Fire, Holy
+        self.evade = evade # percentage chance to evade an attack
+        self.damage_type = damage_type  # Standard, Slash, Strike, Magic, Fire, Dark
         self.damage_resistance = damage_resistance
         self.damage_weakness = damage_weakness
 
 # Champions ----------------------------------------
 champions = [
     Champion("Knight", 150,80,100,40,"Standard","Slash","Strike/Magic"),
-    Champion("Paladin", 200,60,110,30,"Strike","Slash/Holy","Strike/Magic"),
+    Champion("Paladin", 200,60,110,30,"Strike","Slash","Strike/Magic"),
     Champion("Assassin", 120,100,90,70,"Slash","Strike/Magic","Slash/Fire"),
     Champion("Sorcerer", 110,120,90,40,"Magic","Magic","Slash/Fire"),
     Champion("Samurai", 130,80,100,50,"Slash","Strike","Magic/Fire"),
-    Champion("Pyromancer", 110,90,90,40,"Fire","Fire","Slash/Holy")
+    Champion("Pyromancer", 110,90,90,40,"Fire","Fire","Slash")
 ]
 
 # Bosses ----------------------------------------
 bosses = [
-    Boss("Iudex Gundyr",1300,40,10,"Standard","Slash/Holy","Strike/Magic"),
+    Boss("Iudex Gundyr",1300,40,10,"Standard","Slash","Strike/Magic"),
     Boss("Vordt of the Boreal Valley",1500,40,0,"Strike","Slash","Strike"),
     Boss("Crystal Sage",1250,60,15,"Magic","Magic","Slash/Fire"),
     Boss("Abyss Watchers",800,50,20,"Standard","Magic","Slash/Fire"),
-    Boss("Pontiff Sulyvahn",1600,50,20,"Fire","Slash","Strike/Magic"),
+    Boss("Pontiff Sulyvahn",1600,50,15,"Fire","Slash","Strike/Magic"),
     Boss("Yhorm the Giant",2000,50,0,"Standard","Slash","Strike"),
     Boss("Soul of Cinder",1500,60,15,"Fire","Fire","Strike/Magic")
 ]
@@ -105,45 +113,66 @@ def main_menu():    # Main menu function
     global difficulty_mode
     while True:
         print("Welcome to Dark Souls 3 Pantheon!")
-        print("1. Start Game\n2. Champions list\n3. Bosses list\n4. Consumables list\n5. Damage types\n6. Credits\n7. Exit")
+        print("1. Start Game\n2. Champions list\n3. Bosses list\n4. Consumables list\n5. Damage types\n6. Achivements\n7. Credits\n8. Exit")
         choice = input("Enter your choice: ")
-        if choice == '1':
-            clear_screen()
-            dif_choice = input("Choose difficulty (Normal = 1, Hard = 2): ")
-            if dif_choice == '1':
-                difficulty_mode = "Normal"
-                print("\nYou choosed Normal mode. Foes will hold back.")
+        try:
+            if choice == '1':
+                clear_screen()
+                dif_choice = input("Choose your difficulty, Normal (1) or Hard (2): ")
+                try:
+                    if dif_choice == '1':
+                        difficulty_mode = "Normal"
+                        print("\nYou have chosen Normal mode. Foes will hold back.")
+                        skip()
+                        choose_champion_boss()
+                    elif dif_choice == '2':
+                        difficulty_mode = "Hard"
+                        print("\nYou have chosen Hard mode. Foes will show no mercy.")
+                        skip()
+                        choose_champion_boss()
+                    else:
+                        clear_screen()
+                        print("Invalid input. Try again.\n")
+                        skip()
+                except:
+                        clear_screen()
+                        print("Invalid input. Try again.\n")
+                        skip()
+            elif choice == '2':
+                clear_screen()
+                champion_list()
+            elif choice == '3':
+                clear_screen()
+                boss_list()
+            elif choice == '4':
+                clear_screen()
+                consumables_list()
+            elif choice == '5':
+                clear_screen()
+                damage_types()
+            elif choice == '6':
+                clear_screen()
+                players_achivements()
+            elif choice == '7':
+                clear_screen()
+                credits()
+            elif choice == '8':
+                clear_screen()
+                print("Farewell ashen one...")
+                sleep(2)
+                clear_screen()
+                exit_game()
             else:
-                difficulty_mode = "Hard"
-                print("\nYou choosed Hard mode. Foes will not hold back.")
-            skip()
-            choose_champion_boss()
-        elif choice == '2':
-            clear_screen()
-            champion_list()
-        elif choice == '3':
-            clear_screen()
-            boss_list()
-        elif choice == '4':
-            clear_screen()
-            consumables_list()
-        elif choice == '5':
-            clear_screen()
-            damage_types()
-        elif choice == '6':
-            clear_screen()
-            credits()
-        elif choice == '7':
-            clear_screen()
-            print("Farewell ashen one...")
-            sleep(2)
-            clear_screen()
-            exit_game()
-        else:
+                clear_screen()
+                print("Invalid input. Try again.\n")
+                skip()
+        except:
             clear_screen()
             print("Invalid input. Try again.\n")
-            sleep(2)
-            clear_screen()
+            skip()
+
+def players_achivements():
+    pass
 def choose_champion_boss():     # Function to choose champion and boss
     global player_champion
     global player_boss
@@ -181,7 +210,6 @@ def choose_champion_boss():     # Function to choose champion and boss
             clear_screen()
             print("Invalid input. Try again.\n")
             skip()
-
 def champion_list():    # Function to display champion list
     print("List of Champions:\n")
     print("Knight\nOnce a proud guardian of a fallen kingdom, he now roams the ash-choked lands, bound by memory and regret.\nWeapon: Broadsword\n")
@@ -206,7 +234,6 @@ def consumables_list():
     print("Estus flask\nSacred vial of golden fire, capable of healing flesh and spirit alike, carried by those who walk amidst death.\n")
     print("Turtle neck\nBitter draught meat from the shell of a rare creature, it revitalizes the weary, restoring stamina to body and limb.\n")
     print("Exalted flesh\nChunk of strange, crimson flesh that pulses with latent power, granting those who consume it the strength to strike with greater force.\n")
-    print("Boiled crab\nPlump and moist crab meat, expertly boiled to retain its natural flavors, granting the consumer enhanced resistance to incoming attacks.\n")
     skip()
 def damage_types():
     print("List of damage types:\n")
@@ -216,8 +243,28 @@ def damage_types():
     print("Magic\nArcane energy woven from study and will, capable of piercing both body and mind; weak against foes hardened by magic.\n")
     print("Fire\nFlames that burn and sear, capable of rending flesh and spirit; less effective against flame followers and demons alike.\n")
     skip()
+def update_trophy(boss_name):
+    trophy_file = "trophy.txt"
+
+    trophies = {}
+    with open(trophy_file, "r") as file:
+        for x in file:
+            name, value = x.strip().split(" = ")
+            if value == "True":
+                trophies[name] = True
+            else:
+                trophies[name] = False
+
+    boss_tropy = f"{boss_name}_trophy"
+    if boss_tropy in trophies:
+        trophies[boss_tropy] = True
+
+    with open(trophy_file, "w") as file:
+        for name, value in trophies.items():
+            file.write(f"{name} = {value}\n")
+
 def credits():
-    print("Game made by Luboš Kulhan.\nLast update in 2025-12-09.")
+    print("Game made by Luboš Kulhan.\nLast update in 2025-12-10.")
     skip()
 
 def boss_text(boss,champion):
@@ -235,18 +282,18 @@ def boss_text(boss,champion):
             boss_intro = f"\n{boss} kneels in silence... then rises to judge the unkindled once more.\n"
             boss_win_text = f"{champion} is cast down, their flame unworthy in the eyes of {boss}. The forgotten judge returns to his vigil."
             boss_defeated_text = f"{boss} falls to one knee, his duty finally ended. As he turns to dust, {champion} senses the weight of judgment fade into stillness."
-            boss_phase2_win_text = f"{champion} falls, overwhelmed by the relentless fury of {boss}. No mercy remains — only the echoes of judgment endure."
+            boss_phase2_win_text = f"{champion} falls, consumed by the black ichor. No mercy remains — only the echoes of judgment endure."
             boss_phase2_defeated_text = f"{boss} collapses at last, shattered by the unkindled's resolve. As his form dissolves to ash, {champion} perceives the lingering judgment slowly fading into stillness."
             phase_2_text_part1 = f"{boss} falls to one knee, trembling"
-            phase_2_text_part2 = "then rises anew, his form twisted by black ichor. The silent judge is gone — only wrath remains."
-        case "Vordt of the Boreal Valley":
+            phase_2_text_part2 = "then rises anew, his form twisted by black grotesque ichor. His attacks heavier, but slower."
+        case "Vordt of the Boreal Valley": 
             boss_intro = f"\nA chilling wind sweeps the air as {boss} emerges from the frost.\n"
             boss_win_text = f"{champion} is crushed beneath the icy fury of {boss}. The frozen beast bellows into the void, bound forever to his madness."
             boss_defeated_text = f"With a final, shuddering roar, {boss} collapses. Frost turns to mist as {champion} stands amidst the silence of a long-dead kingdom."
-            boss_phase2_win_text = f"{champion} is torn apart beneath the relentless onslaught of {boss}, each icy strike etching agony into flesh and bone."
+            boss_phase2_win_text = f"{champion} is torn apart beneath the relentless onslaught of Vordt, each icy strike etching agony into flesh and bone."
             boss_phase2_defeated_text = f"{boss} finally falls, his monstrous howls echoing across the frozen valley. {champion} stands battered, yet the icy shadow lingers long after the roar fades."
             phase_2_text_part1 = f"{boss} falters, frost cracking across his massive frame"
-            phase_2_text_part2 = "his body enshrouded in a blizzard of icy wrath. The frozen beast's roar is relentless."
+            phase_2_text_part2 = "Vordt's body is enshrouded in a blizzard of icy wrath, and the battlefield trembles under his freezing roar!"
         case "Crystal Sage":
             boss_intro = f"\nA hooded figure shuffles from the mist, staff cracked, robes tattered. {boss} mutters forgotten incantations.\n"
             boss_win_text = f"{champion} is unmade by a storm of crystal shards. The Sage’s hollow chant fades into silence."
@@ -336,6 +383,7 @@ def fight():
     global phase_2_stat_modified
     global phase_2_text_part1
     global phase_2_text_part2
+    global frost_on_player
     boss_current_HP = player_boss.HP
     player_current_HP = player_champion.HP
     player_current_stamina = player_champion.stamina
@@ -344,7 +392,7 @@ def fight():
     boss_text(player_boss.name,player_champion.name)
 
     # Start of the battle
-    print(f"From the swirling mists, {player_champion.name} emerges.\n")
+    print(f"From the white mist, {player_champion.name} emerges.\n")
     for a in range(3):
         print(".")
         sleep(1)
@@ -378,6 +426,8 @@ def fight():
 
         # Player's turn
         while True:
+            if frost_on_player == 2:
+                print("You will take damage from frost this round!\n")
             print(f"{player_champion.name} - HP: {int(player_current_HP)}, Stamina: {player_current_stamina}")
             print(f"{player_boss.name} - HP: {int(boss_current_HP)}\n")
             print("Choose your action:")
@@ -415,12 +465,12 @@ def fight():
                                 print(boss_phase2_win_text)
                                 sleep(3)
                                 skip()
-                                exit_game()
+                                main_menu()
                             elif player_current_HP <= 0:
                                 print(boss_win_text)
                                 sleep(3)
                                 skip()
-                                exit_game()
+                                main_menu()
                         else:
                             if determination_active and exalted_flesh_active:
                                 clear_screen()
@@ -585,14 +635,14 @@ def fight():
                     print(boss_defeated_text)
                     sleep(3)
                     skip()
-                    exit_game()
+                    main_menu()
             else: # Difficulty Hard
                 if phase_2_active == True and boss_current_HP <= 0:
                     clear_screen()
                     print(boss_phase2_defeated_text)
                     sleep(3)
                     skip()
-                    exit_game()
+                    main_menu()
                 else:
                     if phase_2_active == False:
 
@@ -607,8 +657,10 @@ def fight():
         # Boss's turn
         match player_boss.name:
             case "Iudex Gundyr":    # Iudex Gundyr ----------------------------------------------------
+                player_champion_base_evade = player_champion.evade
                 if phase_2_active == True:
-                    real_boss_damage = (real_boss_damage*1.1)
+                    real_boss_damage = (real_boss_damage*1.2)
+                    player_champion_base_evade = player_champion.evade + 10
 
                 if player_boss.damage_type in player_champion.damage_resistance:
                     damage_boss_text = f"{player_boss.name}'s attack lacks its usual strength, dealing only {int(real_boss_damage)} damage."
@@ -624,7 +676,7 @@ def fight():
                 else:
                     evade_chance = r.randint(1,100)
             
-                    if player_current_stamina >= 20 and evade_chance <= player_champion.evade:
+                    if player_current_stamina >= 15 and evade_chance <= player_champion_base_evade:
                         print(f"{player_champion.name} evades {player_boss.name}'s attack!")
                         skip()
                     else:
@@ -644,12 +696,12 @@ def fight():
                         print(boss_phase2_win_text)
                         sleep(3)
                         skip()
-                        exit_game()
+                        main_menu()
                     elif player_current_HP <= 0:
                         print(boss_win_text)
                         sleep(3)
                         skip()
-                        exit_game()
+                        main_menu()
 
                     if difficulty_mode == "Normal":
                         if boss_current_HP <= 0:
@@ -657,21 +709,33 @@ def fight():
                             print(boss_defeated_text)
                             sleep(3)
                             skip()
-                            exit_game()
+                            main_menu()
                     else: # Difficulty Hard
                         if boss_current_HP <= 0:
                             clear_screen()
                             print(boss_phase2_defeated_text)
                             sleep(3)
                             skip()
-                            exit_game()
+                            main_menu()
                         elif phase_2_active == False and (boss_current_HP <= (player_boss.HP*0.5)):
                             phase_2_active = True
                             boss_phase_2_tansition()
 
             case "Vordt of the Boreal Valley": # Vordth of the Boreal Valley ----------------------------------------------------
+                player_champion_base_evade = player_champion.evade
                 if phase_2_active:
-                    pass
+                    player_champion_base_evade = player_champion.evade - 10
+                    frost_on_player += 1
+                    if frost_on_player >= 3:
+                        frost_on_player = 0
+                        frost_damage = (player_boss.damage*0.5)
+                        player_current_HP -= frost_damage
+                        print(f"The cold is unbearable — {player_champion.name} suffers {int(frost_damage)} damage!")
+                        skip()
+                        if player_current_HP <= 0:
+                            print(f"{player_boss.name} succumbs to the frost... yet even without an audience, Vordt still roars.")
+                            skip()
+                            main_menu()
 
                 if player_boss.damage_type in player_champion.damage_resistance:
                     damage_boss_text = f"{player_boss.name}'s attack lacks its usual strength, dealing only {int(real_boss_damage)} damage."
@@ -685,9 +749,9 @@ def fight():
                     shield_bash_stagger = False
                     skip()
                 else:
-                    evade_chance = r.randint(1,101)
+                    evade_chance = r.randint(1,100)
             
-                    if player_current_stamina >= 20 and evade_chance <= player_champion.evade:
+                    if player_current_stamina >= 15 and evade_chance <= player_champion_base_evade:
                         print(f"{player_champion.name} evades {player_boss.name}'s attack!")
                         skip()
                     else:
@@ -707,12 +771,12 @@ def fight():
                         print(boss_phase2_win_text)
                         sleep(3)
                         skip()
-                        exit_game()
+                        main_menu()
                     elif player_current_HP <= 0:
                         print(boss_win_text)
                         sleep(3)
                         skip()
-                        exit_game()
+                        main_menu()
             
                     if difficulty_mode == "Normal":
                         if boss_current_HP <= 0:
@@ -720,14 +784,14 @@ def fight():
                             print(boss_defeated_text)
                             sleep(3)
                             skip()
-                            exit_game()
+                            main_menu()
                     else: # Difficulty Hard
                         if boss_current_HP <= 0:
                             clear_screen()
                             print(boss_phase2_defeated_text)
                             sleep(3)
                             skip()
-                            exit_game()
+                            main_menu()
                         elif phase_2_active == False and (boss_current_HP <= (player_boss.HP*0.5)):
                             phase_2_active = True
                             boss_phase_2_tansition()
@@ -770,12 +834,12 @@ def fight():
                         print(boss_phase2_win_text)
                         sleep(3)
                         skip()
-                        exit_game()
+                        main_menu()
                     elif player_current_HP <= 0:
                         print(boss_win_text)
                         sleep(3)
                         skip()
-                        exit_game()
+                        main_menu()
             
                     if difficulty_mode == "Normal":
                         if boss_current_HP <= 0:
@@ -783,14 +847,14 @@ def fight():
                             print(boss_defeated_text)
                             sleep(3)
                             skip()
-                            exit_game()
+                            main_menu()
                     else: # Difficulty Hard
                         if boss_current_HP <= 0:
                             clear_screen()
                             print(boss_phase2_defeated_text)
                             sleep(3)
                             skip()
-                            exit_game()
+                            main_menu()
                         elif phase_2_active == False and (boss_current_HP <= (player_boss.HP*0.5)):
                             phase_2_active = True
                             boss_phase_2_tansition()
@@ -833,12 +897,12 @@ def fight():
                         print(boss_phase2_win_text)
                         sleep(3)
                         skip()
-                        exit_game()
+                        main_menu()
                     elif player_current_HP <= 0:
                         print(boss_win_text)
                         sleep(3)
                         skip()
-                        exit_game()
+                        main_menu()
             
                     if difficulty_mode == "Normal":
                         if boss_current_HP <= 0:
@@ -846,14 +910,14 @@ def fight():
                             print(boss_defeated_text)
                             sleep(3)
                             skip()
-                            exit_game()
+                            main_menu()
                     else: # Difficulty Hard
                         if boss_current_HP <= 0 and phase_2_active == True:
                             clear_screen()
                             print(boss_phase2_defeated_text)
                             sleep(3)
                             skip()
-                            exit_game()
+                            main_menu()
                         elif phase_2_active == False and boss_current_HP <= 0:
                             boss_current_HP = player_boss.HP
                             phase_2_active = True
@@ -897,12 +961,12 @@ def fight():
                         print(boss_phase2_win_text)
                         sleep(3)
                         skip()
-                        exit_game()
+                        main_menu()
                     elif player_current_HP <= 0:
                         print(boss_win_text)
                         sleep(3)
                         skip()
-                        exit_game()
+                        main_menu()
             
                     if difficulty_mode == "Normal":
                         if boss_current_HP <= 0:
@@ -910,14 +974,14 @@ def fight():
                             print(boss_defeated_text)
                             sleep(3)
                             skip()
-                            exit_game()
+                            main_menu()
                     else: # Difficulty Hard
                         if boss_current_HP <= 0:
                             clear_screen()
                             print(boss_phase2_defeated_text)
                             sleep(3)
                             skip()
-                            exit_game()
+                            main_menu()
                         elif phase_2_active == False and (boss_current_HP <= (player_boss.HP*0.5)):
                             phase_2_active = True
                             boss_phase_2_tansition()
@@ -960,12 +1024,12 @@ def fight():
                         print(boss_phase2_win_text)
                         sleep(3)
                         skip()
-                        exit_game()
+                        main_menu()
                     elif player_current_HP <= 0:
                         print(boss_win_text)
                         sleep(3)
                         skip()
-                        exit_game()
+                        main_menu()
             
                     if difficulty_mode == "Normal":
                         if boss_current_HP <= 0:
@@ -973,14 +1037,14 @@ def fight():
                             print(boss_defeated_text)
                             sleep(3)
                             skip()
-                            exit_game()
+                            main_menu()
                     else: # Difficulty Hard
                         if boss_current_HP <= 0:
                             clear_screen()
                             print(boss_phase2_defeated_text)
                             sleep(3)
                             skip()
-                            exit_game()
+                            main_menu()
                         elif phase_2_active == False and (boss_current_HP <= (player_boss.HP*0.5)):
                             phase_2_active = True
                             boss_phase_2_tansition()
@@ -1023,12 +1087,12 @@ def fight():
                         print(boss_phase2_win_text)
                         sleep(3)
                         skip()
-                        exit_game()
+                        main_menu()
                     elif player_current_HP <= 0:
                         print(boss_win_text)
                         sleep(3)
                         skip()
-                        exit_game()
+                        main_menu()
             
                     if difficulty_mode == "Normal":
                         if boss_current_HP <= 0:
@@ -1036,14 +1100,14 @@ def fight():
                             print(boss_defeated_text)
                             sleep(3)
                             skip()
-                            exit_game()
+                            main_menu()
                     else: # Difficulty Hard
                         if boss_current_HP <= 0 and phase_2_active == True:
                             clear_screen()
                             print(boss_phase2_defeated_text)
                             sleep(3)
                             skip()
-                            exit_game()
+                            main_menu()
                         elif phase_2_active == False and boss_current_HP <= 0:
                             boss_current_HP = player_boss.HP
                             phase_2_active = True
@@ -1061,6 +1125,7 @@ def fight():
         clear_screen()
 
 # The game ----------------------------------------
+update_trophy("Gundyr")
 clear_screen()
-main_menu()
-exit()
+while True:
+    main_menu()

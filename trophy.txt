@@ -1,0 +1,7 @@
+Gundyr_trophy = False
+Vordt_trophy = False
+Sage_trophy = False
+Watchers_trophy = False
+Sulyvahn_trophy = False
+Yhorm_trophy = False
+SoC_trophy = False

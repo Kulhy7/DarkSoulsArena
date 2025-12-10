@@ -8,3 +8,7 @@ This project is not affiliated with, endorsed by, or associated with FromSoftwar
 
 No copyright or trademark infringement is intended. This project is created solely for
 educational and entertainment purposes.
+
+## What trophy.txt do?
+
+It stores data of which bosses did player defeated. Achivements in game can be showed through main menu in "Achivements" (choice 6.)
