@@ -99,7 +99,7 @@ def clear_screen():    # Function to clear the screen
     os.system('cls' if os.name == 'nt' else 'clear') # Works for Windows and Unix-based systems
 def exit_game():    # Function to exit the game
     os._exit(1)
-def skip():
+def skip():     # Function to continue
     print("\nPress Enter to continue.")
     input()
     clear_screen()
@@ -224,13 +224,13 @@ def boss_list():    # Function to display boss list     ADD PHASE 2 DESCRIPTION!
     print("Yhorm the Giant\nOnce a lord of fire and storm, he now lumbers through ruin, his great machete is a monument to a kingdom swallowed by ash.\n")
     print("Soul of Cinder\nThe ever-burning echo of countless heroes, it rises and falls with the First Flame, its Firelink Sword striking down all who seek to tamper with the flame.\n")
     skip()
-def consumables_list():
+def consumables_list():     # Function to display consumable list
     print("List of consumables:\n")
     print("Estus flask\nSacred vial of golden fire, capable of healing flesh and spirit alike, carried by those who walk amidst death.\n")
     print("Turtle neck\nBitter draught meat from the shell of a rare creature, it revitalizes the weary, restoring stamina to body and limb.\n")
     print("Exalted flesh\nChunk of strange, crimson flesh that pulses with latent power, granting those who consume it the strength to strike with greater force.\n")
     skip()
-def damage_types():
+def damage_types():     # Function to display damage types
     print("List of damage types:\n")
     print("Standard\nPlain, unadorned strikes that rely on raw force; steady against most foes but lacks specialization.\n")
     print("Slash\nA cutting edge that tears through flesh and fabric, leaving wounds that fester; less effective against heavy armor.\n")
@@ -239,7 +239,7 @@ def damage_types():
     print("Fire\nFlames that burn and sear, capable of rending flesh and spirit; less effective against flame followers and demons alike.\n")
     skip()
 
-def update_trophy(boss_name):
+def update_trophy(boss_name):# DONT USE!
     trophy_file = "trophy.txt"
 
     trophies = {}
@@ -259,11 +259,11 @@ def update_trophy(boss_name):
         for name, value in trophies.items():
             file.write(f"{name} = {value}\n")
 
-def credits():
+def credits():      # Function to display credits
     print("Game made by Luboš Kulhan.\nLast update in 2025-12-22.")
     skip()
 
-def boss_text(boss,champion):
+def boss_text(boss,champion):       # Function to display boss battle text
     global boss_intro
     global boss_win_text
     global boss_defeated_text
@@ -347,7 +347,7 @@ def boss_text(boss,champion):
         boss_phase2_defeated_extinguish or ""
     )        
 
-def special_text(champion):
+def special_text(champion):     # Function to display special attacks
     global special_attack_text
 
     match champion:
@@ -375,7 +375,7 @@ def boss_phase_2_tansition():
     sleep(3)
     skip()
 
-def fight():
+def fight():        # The battle logic
     global estus_flask_count
     global estus_flask_heal
     global turtle_neck_count
@@ -401,6 +401,7 @@ def fight():
     global frost_on_player
     global crystal_sage_copy_alive
     global special_attack_text
+    AW_single = "Abyss Watcher"
     boss_current_HP = player_boss.HP
     player_current_HP = player_champion.HP
     player_current_stamina = player_champion.stamina
@@ -425,10 +426,10 @@ def fight():
     while True:
 
         if player_champion.damage_type in player_boss.damage_resistance:
-            real_champ_damage = player_champion.damage * 0.8
+            real_champ_damage = player_champion.damage * 0.9
             damage_champ_text = f"{player_champion.name}'s attack proves less potent, dealing only {int(real_champ_damage)} damage."
         elif player_champion.damage_type in player_boss.damage_weakness:
-            real_champ_damage = player_champion.damage * 1.2
+            real_champ_damage = player_champion.damage * 1.1
             damage_champ_text = f"{player_boss.name} recoils — {player_champion.name} attack strikes deep, dealing {int(real_champ_damage)} damage."
         else:
             real_champ_damage = player_champion.damage
@@ -461,25 +462,30 @@ def fight():
                 clear_screen()
                 if special_move_ready:
                     print("Choose attack to execute:")
-                    print("1. Basic Attack (25 stamina)")
+                    print("1. Basic Attack (30 stamina)")
                     print(f"2. Special Attack - {special_attack_text} (50 stamina)")
                     print("3. Back")
                 else:
                     print("Choose attack to execute:")
-                    print("1. Basic Attack (25 stamina)")
+                    print("1. Basic Attack (30 stamina)")
                     print(f"2. Special Attack - {special_attack_text} is on cooldown")
                     print("3. Back")
                 attack_choice = input("Enter your choice: ")
 
                 if attack_choice == '1':
-                    if player_current_stamina >= 25:
+                    if player_current_stamina >= 30:
                         evade_chance_boss = r.randint(1,100)
                         if (evade_chance_boss <= player_boss.evade) and shield_bash_stagger == False:
-                            player_current_stamina -= 25
+                            player_current_stamina -= 30
                             clear_screen()
-                            print(f"{player_boss.name} steps aside, causing {player_champion.name} to miss their attack!\n\n")
-                            player_current_HP -= (real_boss_damage * 0.5)
-                            print(f"{player_boss.name} counter attacks, dealing {int(real_boss_damage * 0.5)} damage to {player_champion.name}!")
+                            if phase_2_active and player_boss.name == "Abyss Watchers":
+                                print(f"{AW_single} steps aside, causing {player_champion.name} to miss their attack!\n")
+                                player_current_HP -= (real_boss_damage * 0.5)
+                                print(f"{AW_single} counter attacks, dealing {int(real_boss_damage * 0.5)} damage to {player_champion.name}!")
+                            else:
+                                print(f"{player_boss.name} steps aside, causing {player_champion.name} to miss their attack!\n")
+                                player_current_HP -= (real_boss_damage * 0.5)
+                                print(f"{player_boss.name} counter attacks, dealing {int(real_boss_damage * 0.5)} damage to {player_champion.name}!")
                             skip()
                             if player_current_HP <= 0 and phase_2_active == True:
                                 print(boss_phase2_win_text)
@@ -491,11 +497,9 @@ def fight():
                                 sleep(3)
                                 skip()
                                 main_menu()
-                            else:
-                                pass
                         elif (phase_2_active and player_boss.name == "Crystal Sage") and  (evade_chance_boss < 50) and crystal_sage_copy_alive:
                             clear_screen()
-                            player_current_stamina -= 25
+                            player_current_stamina -= 30
                             crystal_sage_copy_alive = False
                             print(f"{player_champion.name} shatters the false Sage, leaving only {player_boss.name} standing.")
                             skip()
@@ -503,27 +507,27 @@ def fight():
                             if determination_active and exalted_flesh_active:
                                 clear_screen()
                                 boosted_damage = real_champ_damage * 1.2 * 1.2
-                                player_current_stamina -= 25
+                                player_current_stamina -= 30
                                 boss_current_HP -= boosted_damage
                                 print(f"{player_champion.name} strikes with fury and determination, dealing {int(boosted_damage)} damage!")
                                 skip()
                             elif determination_active:
                                 clear_screen()
                                 boosted_damage = real_champ_damage * 1.2
-                                player_current_stamina -= 25
+                                player_current_stamina -= 30
                                 boss_current_HP -= boosted_damage
                                 print(f"{player_champion.name} strikes with determination, dealing {int(boosted_damage)} damage!")
                                 skip()
                             elif exalted_flesh_active:
                                 clear_screen()
                                 boosted_damage = real_champ_damage * 1.2
-                                player_current_stamina -= 25
+                                player_current_stamina -= 30
                                 boss_current_HP -= boosted_damage
                                 print(f"{player_champion.name} strikes with fury, dealing {int(boosted_damage)} damage!")
                                 skip()
                             else:
                                 clear_screen()
-                                player_current_stamina -= 25
+                                player_current_stamina -= 30
                                 boss_current_HP -= real_champ_damage
                                 print(damage_champ_text)
                                 skip()
@@ -539,7 +543,11 @@ def fight():
                             player_current_stamina -= 50
                             special_move_ready = False
                             special_move_cooldown = 0
-                            if (phase_2_active and player_boss.name == "Crystal Sage") and  (evade_chance_boss < 50) and crystal_sage_copy_alive:
+                            if phase_2_active and player_boss.name == "Abyss Watchers":
+                                print(f"The Knight crashes into {AW_single} with his shield.\n{AW_single} is staggered.")
+                            elif player_boss.name == "Abyss Watchers":
+                                print(f"The Knight crashes into {player_boss.name} with his shield.\n{player_boss.name} are staggered.")
+                            elif (phase_2_active and player_boss.name == "Crystal Sage") and  (evade_chance_boss < 50) and crystal_sage_copy_alive:
                                 crystal_sage_copy_alive = False
                                 print(f"The Knight crashes into {player_boss.name}'s illusion with his shield.\nIllusion falters, leaving only {player_boss.name} standing.")
                             else:
@@ -569,7 +577,11 @@ def fight():
                             player_current_stamina = 0
                             special_move_ready = False
                             special_move_cooldown = 0
-                            if (phase_2_active and player_boss.name == "Crystal Sage") and  (evade_chance_boss < 50) and crystal_sage_copy_alive:
+                            if phase_2_active and player_boss.name == "Abyss Watchers":
+                                print(f"The Sorcerer channels all her stamina, shaping a dark moon of arcane force.\n{AW_single} is blasted aside for {int(moon_damage)} HP!")
+                            elif player_boss.name == "Abyss Watchers":
+                                print(f"The Sorcerer channels all her stamina, shaping a dark moon of arcane force.\n{player_boss.name} are blasted aside for {int(moon_damage)} HP!")
+                            elif (phase_2_active and player_boss.name == "Crystal Sage") and  (evade_chance_boss < 50) and crystal_sage_copy_alive:
                                 crystal_sage_copy_alive = False
                                 print(f"The Sorcerer channels all her stamina, shaping a dark moon of arcane force.\n{player_boss.name} is blasted aside for {int(moon_damage)} HP!")
                                 print(f"\nHer illusion is torn appart.")
@@ -589,7 +601,11 @@ def fight():
                             special_move_cooldown = 0
                             flame_damage = real_champ_damage + player_current_HP * 2
                             player_current_HP = player_current_HP / 2
-                            if (phase_2_active and player_boss.name == "Crystal Sage") and  (evade_chance_boss < 50) and crystal_sage_copy_alive:
+                            if phase_2_active and player_boss.name == "Abyss Watchers":
+                                print(f"The Pyromancer sets herself aflame, sacrificing {int(player_current_HP)} HP.\nShe grasps {AW_single} — burning it for {int(flame_damage)} HP!")
+                            elif player_boss.name == "Abyss Watchers":
+                                print(f"The Pyromancer sets herself aflame, sacrificing {int(player_current_HP)} HP.\nShe grasps {player_boss.name} — burning them for {int(flame_damage)} HP!")
+                            elif (phase_2_active and player_boss.name == "Crystal Sage") and  (evade_chance_boss < 50) and crystal_sage_copy_alive:
                                 crystal_sage_copy_alive = False
                                 print(f"The Pyromancer sets herself aflame, sacrificing {int(player_current_HP)} HP.\nShe grasps {player_boss.name}'s illusion — burning it alive, leaving only {player_boss.name} standing.")
                             else:
@@ -718,21 +734,20 @@ def fight():
                     shield_bash_stagger = False
                     skip()
                 else:            
-                    if player_current_stamina >= 15 and evade_chance < player_champion_base_evade:
+                    if counter_attack:
+                        counter_damage_player = (real_champ_damage * 1.75)
+                        counter_damage_boss = (real_boss_damage/3)
+                        player_current_HP -= counter_damage_boss
+                        boss_current_HP -= counter_damage_player
+                        print(f"{player_champion.name} counters {player_boss.name} attack, slashing him for {int(counter_damage_player)} damage.\n{player_champion.name} is wounded only for {int(counter_damage_boss)} damage.")
+                        skip()
+                    elif player_current_stamina >= 15 and evade_chance < player_champion_base_evade:
                         print(f"{player_champion.name} evades {player_boss.name}'s attack!")
                         skip()
                     else:
-                        if counter_attack:
-                            counter_damage_player = (real_champ_damage * 1.75)
-                            counter_damage_boss = (real_boss_damage/3)
-                            player_current_HP -= counter_damage_boss
-                            boss_current_HP -= counter_damage_player
-                            print(f"{player_champion.name} counters {player_boss.name} attack, slashing him for {int(counter_damage_player)} damage.\n{player_champion.name} is wounded only for {int(counter_damage_boss)} damage.")
-                            skip()
-                        else:
-                            player_current_HP -= real_boss_damage
-                            print(damage_boss_text)
-                            skip()
+                        player_current_HP -= real_boss_damage
+                        print(damage_boss_text)
+                        skip()
 
                     if player_current_HP <= 0 and phase_2_active == True:
                         print(boss_phase2_win_text)
@@ -791,21 +806,20 @@ def fight():
                     shield_bash_stagger = False
                     skip()
                 else:            
-                    if player_current_stamina >= 15 and evade_chance < player_champion_base_evade:
+                    if counter_attack:
+                        counter_damage_player = (real_champ_damage * 1.75)
+                        counter_damage_boss = (real_boss_damage/3)
+                        player_current_HP -= counter_damage_boss
+                        boss_current_HP -= counter_damage_player
+                        print(f"{player_champion.name} counters {player_boss.name} attack, slashing him for {int(counter_damage_player)} damage.\n{player_champion.name} is wounded only for {int(counter_damage_boss)} damage.")
+                        skip()
+                    elif player_current_stamina >= 15 and evade_chance < player_champion_base_evade:
                         print(f"{player_champion.name} evades {player_boss.name}'s attack!")
                         skip()
                     else:
-                        if counter_attack:
-                            counter_damage_player = (real_champ_damage * 1.75)
-                            counter_damage_boss = (real_boss_damage/3)
-                            player_current_HP -= counter_damage_boss
-                            boss_current_HP -= counter_damage_player
-                            print(f"{player_champion.name} counters {player_boss.name} attack, slashing him for {int(counter_damage_player)} damage.\n{player_champion.name} is wounded only for {int(counter_damage_boss)} damage.")
-                            skip()
-                        else:
-                            player_current_HP -= real_boss_damage
-                            print(damage_boss_text)
-                            skip()
+                        player_current_HP -= real_boss_damage
+                        print(damage_boss_text)
+                        skip()
 
                     if player_current_HP <= 0 and phase_2_active == True:
                         print(boss_phase2_win_text)
@@ -842,6 +856,7 @@ def fight():
                     crystal_sage_copy_alive = True
                     print(f"Reality warps as {player_boss.name} summons another illusion.")
                     skip()
+
                 if player_boss.damage_type in player_champion.damage_resistance:
                     damage_boss_text = f"{player_boss.name}'s attack lacks its usual strength, dealing only {int(real_boss_damage)} damage."
                 elif player_boss.damage_type in player_champion.damage_weakness:
@@ -854,21 +869,20 @@ def fight():
                     shield_bash_stagger = False
                     skip()
                 else:            
-                    if player_current_stamina >= 15 and evade_chance < player_champion.evade:
+                    if counter_attack:
+                        counter_damage_player = (real_champ_damage * 1.75)
+                        counter_damage_boss = (real_boss_damage/3)
+                        player_current_HP -= counter_damage_boss
+                        boss_current_HP -= counter_damage_player
+                        print(f"{player_champion.name} counters {player_boss.name} attack, slashing him for {int(counter_damage_player)} damage.\n{player_champion.name} is wounded only for {int(counter_damage_boss)} damage.")
+                        skip()
+                    elif player_current_stamina >= 15 and evade_chance < player_champion_base_evade:
                         print(f"{player_champion.name} evades {player_boss.name}'s attack!")
                         skip()
                     else:
-                        if counter_attack:
-                            counter_damage_player = (real_champ_damage * 1.75)
-                            counter_damage_boss = (real_boss_damage/3)
-                            player_current_HP -= counter_damage_boss
-                            boss_current_HP -= counter_damage_player
-                            print(f"{player_champion.name} counters {player_boss.name} attack, slashing him for {int(counter_damage_player)} damage.\n{player_champion.name} is wounded only for {int(counter_damage_boss)} damage.")
-                            skip()
-                        else:
-                            player_current_HP -= real_boss_damage
-                            print(damage_boss_text)
-                            skip()
+                        player_current_HP -= real_boss_damage
+                        print(damage_boss_text)
+                        skip()
 
                     if player_current_HP <= 0 and phase_2_active == True:
                         print(boss_phase2_win_text)
@@ -901,38 +915,92 @@ def fight():
 
             case "Abyss Watchers": # Abyss Watchers ----------------------------------------------------
                 if phase_2_active:
-                    phase_2_stat_modified = True
-            
-                if player_boss.damage_type in player_champion.damage_resistance:
-                    damage_boss_text = f"{player_boss.name}'s attack lacks its usual strength, dealing only {int(real_boss_damage)} damage."
-                elif player_boss.damage_type in player_champion.damage_weakness:
-                    damage_boss_text = f"{player_champion.name} takes a heavy hit — {player_boss.name} deals {int(real_boss_damage)} damage."
-                else:
-                    damage_boss_text = f"{player_boss.name} hits {player_champion.name}, dealing {int(real_boss_damage)} damage."
+                    player_boss.damage_type = "Fire"
+                    
 
-                if shield_bash_stagger:
-                    print(f"{player_boss.name} stands back on its feet, ready for next attack.")
-                    shield_bash_stagger = False
-                    skip()
-                else:            
-                    if player_current_stamina >= 15 and evade_chance < player_champion.evade:
-                        print(f"{player_champion.name} evades {player_boss.name}'s attack!")
-                        skip()
+                    if player_boss.damage_type in player_champion.damage_resistance:
+                        damage_boss_text = f"{AW_single}'s attack lacks its usual strength, dealing only {int(real_boss_damage * 1.2)} damage."
+                    elif player_boss.damage_type in player_champion.damage_weakness:
+                        damage_boss_text = f"{player_champion.name} takes a heavy hit — {AW_single} deals {int(real_boss_damage * 1.2)} damage."
                     else:
+                        damage_boss_text = f"{AW_single} hits {player_champion.name}, dealing {int(real_boss_damage * 1.2)} damage."
+
+                    if shield_bash_stagger:
+                        print(f"{AW_single} stands back on its feet, ready for next attack.")
+                        shield_bash_stagger = False
+                        skip()
+                    else:            
                         if counter_attack:
                             counter_damage_player = (real_champ_damage * 1.75)
-                            counter_damage_boss = (real_boss_damage/3)
+                            counter_damage_boss = ((real_boss_damage/3) * 1.2)
                             player_current_HP -= counter_damage_boss
                             boss_current_HP -= counter_damage_player
-                            print(f"{player_champion.name} counters {player_boss.name} attack, slashing him for {int(counter_damage_player)} damage.\n{player_champion.name} is wounded only for {int(counter_damage_boss)} damage.")
+                            print(f"{player_champion.name} counters {AW_single} attack, slashing him for {int(counter_damage_player)} damage.\n{player_champion.name} is wounded only for {int(counter_damage_boss)} damage.")
+                            skip()
+                        elif player_current_stamina >= 15 and evade_chance < player_champion.evade:
+                            print(f"{player_champion.name} evades {AW_single}'s attack!")
                             skip()
                         else:
-                            player_current_HP -= real_boss_damage
+                            player_current_HP -= (real_boss_damage * 1.2)
                             print(damage_boss_text)
                             skip()
 
-                    if player_current_HP <= 0 and phase_2_active == True:
-                        print(boss_phase2_win_text)
+                        if player_current_HP <= 0 and boss_current_HP <= 0:
+                            print("Champion and boss falls...")
+                            sleep(3)
+                            skip()
+                            main_menu()
+                        elif player_current_HP <= 0:
+                            print(boss_phase2_win_text)
+                            sleep(3)
+                            skip()
+                            main_menu()
+                        elif boss_current_HP <= 0:
+                            print(boss_phase2_defeated_text)
+                            sleep(3)
+                            skip()
+                            main_menu()
+                else:
+                    if player_boss.damage_type in player_champion.damage_resistance:
+                        damage_boss_text = f"{AW_single}'s attack lacks its usual strength, dealing only {int(real_boss_damage)} damage."
+                    elif player_boss.damage_type in player_champion.damage_weakness:
+                        damage_boss_text = f"{player_champion.name} takes a heavy hit — {AW_single} deals {int(real_boss_damage)} damage."
+                    else:
+                        damage_boss_text = f"{AW_single} hits {player_champion.name}, dealing {int(real_boss_damage)} damage."
+
+                    if shield_bash_stagger:
+                        print(f"{player_boss.name} stands back on their feet, ready for next attack.")
+                        shield_bash_stagger = False
+                        skip()
+                    else:
+                        if player_current_stamina >= 15 and evade_chance < player_champion.evade:
+                            print(f"{player_champion.name} evades {player_boss.name}'s attack!")
+                            skip()
+                        else:
+                            if counter_attack:
+                                counter_damage_player = (real_champ_damage * 1.75)
+                                counter_damage_boss = (real_boss_damage/3)
+                                player_current_HP -= counter_damage_boss
+                                boss_current_HP -= counter_damage_player
+                                print(f"{player_champion.name} counters {player_boss.name} attack, slashing him for {int(counter_damage_player)} damage.\n{player_champion.name} is wounded only for {int(counter_damage_boss)} damage.")
+                                skip()
+                            else:
+                                evade_chance = r.randint(1,100)
+                                player_current_HP -= real_boss_damage
+                                print(damage_boss_text)    # first AW
+                                skip()
+                                if evade_chance < 20:
+                                    evade_chance = r.randint(1,100)
+                                    player_current_HP -= (real_boss_damage*0.5)     # second AW
+                                    print(f"The second Abyss Watcher lunges in, striking {player_champion.name} for {int(real_boss_damage * 0.5)} damage!")
+                                    skip()
+                                    if evade_chance < 20:
+                                        player_current_HP -= (real_boss_damage*0.5)    # third AW
+                                        print(f"The third Abyss Watcher finishes the flurry with a deadly thrust, wounding {player_champion.name} for another {int(real_boss_damage * 0.5)} damage!")
+                                        skip()
+                
+                    if player_current_HP <= 0 and boss_current_HP <= 0:
+                        print("Champion and boss falls...")
                         sleep(3)
                         skip()
                         main_menu()
@@ -941,25 +1009,14 @@ def fight():
                         sleep(3)
                         skip()
                         main_menu()
-            
-                    if difficulty_mode == "Normal":
-                        if boss_current_HP <= 0:
-                            clear_screen()
-                            print(boss_defeated_text)
-                            sleep(3)
-                            skip()
-                            main_menu()
-                    else: # Difficulty Hard
-                        if boss_current_HP <= 0 and phase_2_active == True:
-                            clear_screen()
-                            print(boss_phase2_defeated_text)
-                            sleep(3)
-                            skip()
-                            main_menu()
-                        elif phase_2_active == False and boss_current_HP <= 0:
-                            boss_current_HP = player_boss.HP
-                            phase_2_active = True
-                            boss_phase_2_tansition()
+                    elif boss_current_HP <= 0 and difficulty_mode == "Normal":
+                        print(boss_defeated_text)
+                        sleep(3)
+                        skip()
+                        main_menu()
+                    elif boss_current_HP <= 0 and difficulty_mode == "Hard":
+                        phase_2_active = True
+                        print(boss_phase_2_tansition)
 
             case "Pontiff Sulyvahn": # Pontiff Sulyvahn ----------------------------------------------------
                 if phase_2_active:
@@ -977,21 +1034,20 @@ def fight():
                     shield_bash_stagger = False
                     skip()
                 else:
-                    if player_current_stamina >= 15 and evade_chance < player_champion.evade:
+                    if counter_attack:
+                        counter_damage_player = (real_champ_damage * 1.75)
+                        counter_damage_boss = (real_boss_damage/3)
+                        player_current_HP -= counter_damage_boss
+                        boss_current_HP -= counter_damage_player
+                        print(f"{player_champion.name} counters {player_boss.name} attack, slashing him for {int(counter_damage_player)} damage.\n{player_champion.name} is wounded only for {int(counter_damage_boss)} damage.")
+                        skip()
+                    elif player_current_stamina >= 15 and evade_chance < player_champion_base_evade:
                         print(f"{player_champion.name} evades {player_boss.name}'s attack!")
                         skip()
                     else:
-                        if counter_attack:
-                            counter_damage_player = (real_champ_damage * 1.75)
-                            counter_damage_boss = (real_boss_damage/3)
-                            player_current_HP -= counter_damage_boss
-                            boss_current_HP -= counter_damage_player
-                            print(f"{player_champion.name} counters {player_boss.name} attack, slashing him for {int(counter_damage_player)} damage.\n{player_champion.name} is wounded only for {int(counter_damage_boss)} damage.")
-                            skip()
-                        else:
-                            player_current_HP -= real_boss_damage
-                            print(damage_boss_text)
-                            skip()
+                        player_current_HP -= real_boss_damage
+                        print(damage_boss_text)
+                        skip()
 
                     if player_current_HP <= 0 and phase_2_active == True:
                         print(boss_phase2_win_text)
@@ -1038,21 +1094,20 @@ def fight():
                     shield_bash_stagger = False
                     skip()
                 else:            
-                    if player_current_stamina >= 15 and evade_chance < player_champion.evade:
+                    if counter_attack:
+                        counter_damage_player = (real_champ_damage * 1.75)
+                        counter_damage_boss = (real_boss_damage/3)
+                        player_current_HP -= counter_damage_boss
+                        boss_current_HP -= counter_damage_player
+                        print(f"{player_champion.name} counters {player_boss.name} attack, slashing him for {int(counter_damage_player)} damage.\n{player_champion.name} is wounded only for {int(counter_damage_boss)} damage.")
+                        skip()
+                    elif player_current_stamina >= 15 and evade_chance < player_champion_base_evade:
                         print(f"{player_champion.name} evades {player_boss.name}'s attack!")
                         skip()
                     else:
-                        if counter_attack:
-                            counter_damage_player = (real_champ_damage * 1.75)
-                            counter_damage_boss = (real_boss_damage/3)
-                            player_current_HP -= counter_damage_boss
-                            boss_current_HP -= counter_damage_player
-                            print(f"{player_champion.name} counters {player_boss.name} attack, slashing him for {int(counter_damage_player)} damage.\n{player_champion.name} is wounded only for {int(counter_damage_boss)} damage.")
-                            skip()
-                        else:
-                            player_current_HP -= real_boss_damage
-                            print(damage_boss_text)
-                            skip()
+                        player_current_HP -= real_boss_damage
+                        print(damage_boss_text)
+                        skip()
 
                     if player_current_HP <= 0 and phase_2_active == True:
                         print(boss_phase2_win_text)
@@ -1099,21 +1154,20 @@ def fight():
                     shield_bash_stagger = False
                     skip()
                 else:            
-                    if player_current_stamina >= 15 and evade_chance < player_champion.evade:
+                    if counter_attack:
+                        counter_damage_player = (real_champ_damage * 1.75)
+                        counter_damage_boss = (real_boss_damage/3)
+                        player_current_HP -= counter_damage_boss
+                        boss_current_HP -= counter_damage_player
+                        print(f"{player_champion.name} counters {player_boss.name} attack, slashing him for {int(counter_damage_player)} damage.\n{player_champion.name} is wounded only for {int(counter_damage_boss)} damage.")
+                        skip()
+                    elif player_current_stamina >= 15 and evade_chance < player_champion_base_evade:
                         print(f"{player_champion.name} evades {player_boss.name}'s attack!")
                         skip()
                     else:
-                        if counter_attack:
-                            counter_damage_player = (real_champ_damage * 1.75)
-                            counter_damage_boss = (real_boss_damage/3)
-                            player_current_HP -= counter_damage_boss
-                            boss_current_HP -= counter_damage_player
-                            print(f"{player_champion.name} counters {player_boss.name} attack, slashing him for {int(counter_damage_player)} damage.\n{player_champion.name} is wounded only for {int(counter_damage_boss)} damage.")
-                            skip()
-                        else:
-                            player_current_HP -= real_boss_damage
-                            print(damage_boss_text)
-                            skip()
+                        player_current_HP -= real_boss_damage
+                        print(damage_boss_text)
+                        skip()
 
                     if player_current_HP <= 0 and phase_2_active == True:
                         print(boss_phase2_win_text)
@@ -1157,7 +1211,6 @@ def fight():
         clear_screen()
 
 # The game ----------------------------------------
-update_trophy("Vordt of the Boreal Valley")
-clear_screen()
 while True:
+    clear_screen()
     main_menu()
