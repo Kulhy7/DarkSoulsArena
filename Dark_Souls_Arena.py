@@ -6,12 +6,7 @@
 # to their respective owners.
 
 
-# ==============================================
-#  Program: Dark Souls 3 Pantheon
-#  Author: Luboš Kulhan | alias: Kulhy, Adam Kaiser
-#  Description: Game where player fights dark souls bosses in turn based system.
-# ==============================================
-
+# search: NEEDS CHANGE
 import os
 import random as r
 from time import sleep
@@ -39,6 +34,7 @@ difficulty_mode = "Normal"
 real_champ_damage = None
 real_boss_damage = None
 frost_on_player = 0
+crystal_sage_copy_alive = True
 Gundyr_trophy = False
 Vordt_trophy = False
 Sage_trophy = False
@@ -219,7 +215,7 @@ def champion_list():    # Function to display champion list
     print("Samurai\nSwordsman who perfected his art at the cost of his humanity, now bound to the dance of endless battle.\nWeapon: Uchigatana\n")
     print("Pyromancer\nOnce a Fire Keeper, she broke her sacred vow and embraced the flame’s forbidden touch. Now she burns eternally, neither servant nor savior.\nWeapong: Pyromancy Flame\n")
     skip()   
-def boss_list():    # Function to display boss list
+def boss_list():    # Function to display boss list     ADD PHASE 2 DESCRIPTION!
     print("List of Bosses:\n")
     print("Iudex Gundyr\nOnce a judge of the First Flame, he now stands forever at the threshold, his halberd stained with the blood of uncounted challengers.\n")
     print("Vordt of the Boreal Valley\nBeast once crowned in frost and fury, now a raging shell of servitude, its greatfrost mace tearing through all who dare approach.\n")
@@ -265,7 +261,7 @@ def update_trophy(boss_name):
             file.write(f"{name} = {value}\n")
 
 def credits():
-    print("Game made by Luboš Kulhan.\nLast update in 2025-12-10.")
+    print("Game made by Luboš Kulhan.\nLast update in 2025-12-22.")
     skip()
 
 def boss_text(boss,champion):
@@ -301,7 +297,7 @@ def boss_text(boss,champion):
             boss_defeated_text = f"{boss} falls, staff splintering. Shards scatter like dead stars. {champion} stands in the ruins of a library long burned."
             boss_phase2_win_text = f"{champion} is torn asunder by the relentless barrage of crystalline magic. Each spell twists reality, leaving only disorientation and ruin in its wake."
             boss_phase2_defeated_text = f"{boss} collapses, fragments of light scattering like broken time itself. {champion} barely stands, the echoes of arcane fury still ringing in their ears."
-            phase_2_text_part1 = f"{boss} fractures, her form splitting into twin apparitions. One real, one false—both wield the same deadly sorcery"
+            phase_2_text_part1 = f"{boss} fractures, her form splitting into twin apparitions. One real, one false"
             phase_2_text_part2 = "the Sage's deception begins."
         case "Abyss Watchers":
             boss_intro = f"\nA chorus of clashing steel echoes through the dark as {boss} surge forward.\n"
@@ -385,6 +381,7 @@ def fight():
     global phase_2_text_part1
     global phase_2_text_part2
     global frost_on_player
+    global crystal_sage_copy_alive
     boss_current_HP = player_boss.HP
     player_current_HP = player_champion.HP
     player_current_stamina = player_champion.stamina
@@ -442,21 +439,21 @@ def fight():
                 clear_screen()
                 if special_move_ready:
                     print("Choose attack to execute:")
-                    print("1. Basic Attack (30 stamina)")
-                    print("2. Special Move (60 stamina)")
+                    print("1. Basic Attack (25 stamina)")
+                    print("2. Special Move (50 stamina)")
                     print("3. Back")
                 else:
                     print("Choose attack to execute:")
-                    print("1. Basic Attack (30 stamina)")
+                    print("1. Basic Attack (25 stamina)")
                     print("2. Special Move on cooldown")
                     print("3. Back")
                 attack_choice = input("Enter your choice: ")
 
                 if attack_choice == '1':
-                    if player_current_stamina >= 30:
-                        evade_chance_boss = r.randint(1,101)
-                        if evade_chance_boss <= player_boss.evade:
-                            player_current_stamina -= 30
+                    if player_current_stamina >= 25:
+                        evade_chance_boss = r.randint(1,100)
+                        if (evade_chance_boss <= player_boss.evade) and shield_bash_stagger == False:
+                            player_current_stamina -= 25
                             clear_screen()
                             print(f"{player_boss.name} steps aside, causing {player_champion.name} to miss their attack!\n\n")
                             player_current_HP -= (real_boss_damage * 0.5)
@@ -472,31 +469,39 @@ def fight():
                                 sleep(3)
                                 skip()
                                 main_menu()
+                            else:
+                                pass
+                        elif (phase_2_active and player_boss.name == "Crystal Sage") and  (evade_chance_boss < 50) and crystal_sage_copy_alive:
+                            clear_screen()
+                            player_current_stamina -= 25
+                            crystal_sage_copy_alive = False
+                            print(f"{player_champion.name} strikes {player_boss.name}'s copy, killing it. For now only {player_boss.name} is present in the arena.") # NEEDS CHANGE ----------------------------
+                            skip()
                         else:
                             if determination_active and exalted_flesh_active:
                                 clear_screen()
                                 boosted_damage = real_champ_damage * 1.2 * 1.2
-                                player_current_stamina -= 30
+                                player_current_stamina -= 25
                                 boss_current_HP -= boosted_damage
                                 print(f"{player_champion.name} strikes with fury and determination, dealing {int(boosted_damage)} damage!")
                                 skip()
                             elif determination_active:
                                 clear_screen()
                                 boosted_damage = real_champ_damage * 1.2
-                                player_current_stamina -= 30
+                                player_current_stamina -= 25
                                 boss_current_HP -= boosted_damage
                                 print(f"{player_champion.name} strikes with determination, dealing {int(boosted_damage)} damage!")
                                 skip()
                             elif exalted_flesh_active:
                                 clear_screen()
                                 boosted_damage = real_champ_damage * 1.2
-                                player_current_stamina -= 30
+                                player_current_stamina -= 25
                                 boss_current_HP -= boosted_damage
                                 print(f"{player_champion.name} strikes with fury, dealing {int(boosted_damage)} damage!")
                                 skip()
                             else:
                                 clear_screen()
-                                player_current_stamina -= 30
+                                player_current_stamina -= 25
                                 boss_current_HP -= real_champ_damage
                                 print(damage_champ_text)
                                 skip()
@@ -506,7 +511,7 @@ def fight():
                         skip()
                 elif attack_choice == '2':
                     clear_screen()
-                    if player_current_stamina >= 60 and special_move_ready:
+                    if player_current_stamina >= 50 and special_move_ready:
 
                         if player_champion.name == "Knight":
                             shield_bash_stagger = True
@@ -535,7 +540,11 @@ def fight():
                             player_current_stamina = 0
                             special_move_ready = False
                             special_move_cooldown = 0
-                            print(f"The Sorcerer channels all her stamina, shaping a dark moon of arcane force.\n{player_boss.name} is blasted aside, taking {int(moon_damage)} damage!")
+                            if (phase_2_active and player_boss.name == "Crystal Sage") and  (evade_chance_boss < 50) and crystal_sage_copy_alive:
+                                crystal_sage_copy_alive = False
+                                print(f"The Sorcerer channels all her stamina, shaping a dark moon of arcane force.\n{player_boss.name} and her copy is blasted aside, taking {int(moon_damage)} damage!")
+                            else:
+                                print(f"The Sorcerer channels all her stamina, shaping a dark moon of arcane force.\n{player_boss.name} is blasted aside, taking {int(moon_damage)} damage!")
                             skip()
                         elif player_champion.name == "Samurai":
                             counter_attack = True
@@ -551,9 +560,8 @@ def fight():
                             player_current_HP = player_current_HP / 2
                             flame_damage = real_champ_damage + player_current_HP * 2
                             boss_current_HP -= flame_damage
-                            print(f"The Pyromancer sets herself aflame, damaging her self for {int(player_current_HP)}.\n{player_boss.name} is burned for {int(flame_damage)} damage!")
+                            print(f"The Pyromancer sets herself aflame, damaging her self for {int(player_current_HP)}.\n{player_boss.name} is burned for {int(flame_damage)} damage!") # NEEDS CHANGE ---------
                             skip()
-
                     else:
                         print("Not enough stamina to perform special move!")
                         skip()
@@ -798,9 +806,11 @@ def fight():
                             boss_phase_2_tansition()
 
             case "Crystal Sage": # Crystal Sage ----------------------------------------------------
-                if phase_2_active:
-                    pass
-
+                if phase_2_active and crystal_sage_copy_alive == False:
+                    real_boss_damage = (player_boss.damage * 1.1)
+                    crystal_sage_copy_alive = True
+                    print(f"{player_boss.name} summons new copy of herself.")       # NEEDS CHANGE -----------------------------------------
+                    skip()
                 if player_boss.damage_type in player_champion.damage_resistance:
                     damage_boss_text = f"{player_boss.name}'s attack lacks its usual strength, dealing only {int(real_boss_damage)} damage."
                 elif player_boss.damage_type in player_champion.damage_weakness:
