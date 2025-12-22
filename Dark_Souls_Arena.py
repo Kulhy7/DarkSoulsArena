@@ -26,6 +26,7 @@ boss_phase2_win_text = None
 boss_phase2_defeated_text = None
 boss_phase2_defeated_reignite = None
 boss_phase2_defeated_extinguish = None
+special_attack_text = None
 phase_2_active = False
 phase_2_stat_modified = False
 difficulty_mode = "Normal"
@@ -193,7 +194,7 @@ def choose_champion_boss():     # Function to choose champion and boss
         print("List of Bosses:")
         for boss in bosses:
             print(f"{y + 1}. {boss.name} - HP: {boss.HP}, Damage: {boss.damage}")
-            y+= 1
+            y += 1
         try:
             player_choice = int(input(f"Pick a boss you want to fight (1-{len(bosses)}): "))
             player_boss = bosses[player_choice-1]
@@ -272,7 +273,7 @@ def boss_text(boss,champion):
     global boss_phase2_defeated_text
     global boss_phase2_defeated_reignite
     global boss_phase2_defeated_extinguish
-    match player_boss.name:
+    match boss:
         case "Iudex Gundyr":
             boss_intro = f"\n{boss} kneels in silence... then rises to judge the unkindled once more.\n"
             boss_win_text = f"{champion} is cast down, their flame unworthy in the eyes of {boss}. The forgotten judge returns to his vigil."
@@ -346,6 +347,25 @@ def boss_text(boss,champion):
         boss_phase2_defeated_extinguish or ""
     )        
 
+def special_text(champion):
+    global special_attack_text
+
+    match champion:
+        case "Knight":
+            special_attack_text = "Shield Bash"
+        case "Paladin":
+            special_attack_text = "Determination"
+        case "Assassin":
+            special_attack_text = "Backstab"
+        case "Sorcerer":
+            special_attack_text = "Dark Moon"
+        case "Samurai":
+            special_attack_text = "Iai Stance"
+        case "Pyromancer":
+            special_attack_text = "Cinders Kiss"
+    
+    return(special_attack_text)
+    
 def boss_phase_2_tansition():
     print(phase_2_text_part1,end="",flush=True)
     for i in range(3):
@@ -380,12 +400,16 @@ def fight():
     global phase_2_text_part2
     global frost_on_player
     global crystal_sage_copy_alive
+    global special_attack_text
     boss_current_HP = player_boss.HP
     player_current_HP = player_champion.HP
     player_current_stamina = player_champion.stamina
 
     # Boss text
     boss_text(player_boss.name,player_champion.name)
+
+    # Champion text
+    special_text(player_champion.name)
 
     # Start of the battle
     print(f"From the white mist, {player_champion.name} emerges.\n")
@@ -438,12 +462,12 @@ def fight():
                 if special_move_ready:
                     print("Choose attack to execute:")
                     print("1. Basic Attack (25 stamina)")
-                    print("2. Special Move (50 stamina)")
+                    print(f"2. Special Attack - {special_attack_text} (50 stamina)")
                     print("3. Back")
                 else:
                     print("Choose attack to execute:")
                     print("1. Basic Attack (25 stamina)")
-                    print("2. Special Move on cooldown")
+                    print(f"2. Special Attack - {special_attack_text} is on cooldown")
                     print("3. Back")
                 attack_choice = input("Enter your choice: ")
 
@@ -526,7 +550,7 @@ def fight():
                             player_current_stamina -= 50
                             special_move_ready = False
                             special_move_cooldown = 0
-                            print(f"The Paladin lifts his mace toward the heavens.\nFaith hardens his attacks.")
+                            print(f"The Paladin lifts his mace toward the heavens.\nDetermination hardens his attacks.")
                             skip()
                         elif player_champion.name == "Assassin":
                             player_current_stamina -= 50
@@ -570,7 +594,7 @@ def fight():
                                 print(f"The Pyromancer sets herself aflame, sacrificing {int(player_current_HP)} HP.\nShe grasps {player_boss.name}'s illusion — burning it alive, leaving only {player_boss.name} standing.")
                             else:
                                 boss_current_HP -= flame_damage
-                                print(f"The Pyromancer sets herself aflame, sacrificing {int(player_current_HP)} HP.\nShe grasps {player_boss.name} — burning her for {int(flame_damage)} HP!")
+                                print(f"The Pyromancer sets herself aflame, sacrificing {int(player_current_HP)} HP.\nShe grasps {player_boss.name} — burning it for {int(flame_damage)} HP!")
                             skip()
                     else:
                         print("Not enough stamina to perform special move!")
