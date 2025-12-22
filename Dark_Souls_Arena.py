@@ -5,8 +5,6 @@
 # by FromSoftware. All Dark Souls names, characters, and content belong
 # to their respective owners.
 
-
-# search: NEEDS CHANGE
 import os
 import random as r
 from time import sleep
@@ -86,13 +84,13 @@ champions = [
 
 # Bosses ----------------------------------------
 bosses = [
-    Boss("Iudex Gundyr",1300,40,10,"Standard","Slash","Strike/Magic"),
+    Boss("Iudex Gundyr",1300,40,5,"Standard","Slash","Strike/Magic"),
     Boss("Vordt of the Boreal Valley",1500,40,0,"Strike","Slash","Strike"),
-    Boss("Crystal Sage",1250,60,15,"Magic","Magic","Slash/Fire"),
-    Boss("Abyss Watchers",800,50,20,"Standard","Magic","Slash/Fire"),
+    Boss("Crystal Sage",1250,60,5,"Magic","Magic","Slash/Fire"),
+    Boss("Abyss Watchers",800,50,15,"Standard","Magic","Slash/Fire"),
     Boss("Pontiff Sulyvahn",1600,50,15,"Fire","Slash","Strike/Magic"),
     Boss("Yhorm the Giant",2000,50,0,"Standard","Slash","Strike"),
-    Boss("Soul of Cinder",1500,60,15,"Fire","Fire","Strike/Magic")
+    Boss("Soul of Cinder",1500,60,5,"Fire","Fire","Strike/Magic")
 ]
 
 # Functions ----------------------------------------
@@ -475,7 +473,7 @@ def fight():
                             clear_screen()
                             player_current_stamina -= 25
                             crystal_sage_copy_alive = False
-                            print(f"{player_champion.name} strikes {player_boss.name}'s copy, killing it. For now only {player_boss.name} is present in the arena.") # NEEDS CHANGE ----------------------------
+                            print(f"{player_champion.name} shatters the false Sage, leaving only {player_boss.name} standing.")
                             skip()
                         else:
                             if determination_active and exalted_flesh_active:
@@ -512,27 +510,34 @@ def fight():
                 elif attack_choice == '2':
                     clear_screen()
                     if player_current_stamina >= 50 and special_move_ready:
-
                         if player_champion.name == "Knight":
                             shield_bash_stagger = True
-                            player_current_stamina -= 60
+                            player_current_stamina -= 50
                             special_move_ready = False
                             special_move_cooldown = 0
-                            print(f"The Knight crashes into {player_boss.name} with a shield bash!\n{player_boss.name} is staggered, unable to attack next turn.")
+                            if (phase_2_active and player_boss.name == "Crystal Sage") and  (evade_chance_boss < 50) and crystal_sage_copy_alive:
+                                crystal_sage_copy_alive = False
+                                print(f"The Knight crashes into {player_boss.name}'s illusion with his shield.\nIllusion falters, leaving only {player_boss.name} standing.")
+                            else:
+                                print(f"The Knight crashes into {player_boss.name} with his shield.\n{player_boss.name} is staggered.")
                             skip()
                         elif player_champion.name == "Paladin":
                             determination_active = True
-                            player_current_stamina -= 60
+                            player_current_stamina -= 50
                             special_move_ready = False
                             special_move_cooldown = 0
-                            print(f"The Paladin lifts his mace toward the heavens, eyes aflame with determination.\nEvery blow this turn strikes with greater power.")
+                            print(f"The Paladin lifts his mace toward the heavens.\nFaith hardens his attacks.")
                             skip()
                         elif player_champion.name == "Assassin":
-                            player_current_stamina -= 60
+                            player_current_stamina -= 50
                             special_move_ready = False
                             special_move_cooldown = 0
-                            boss_current_HP -= player_champion.damage * 2.5
-                            print(f"The Assassin vanishes in a blur, his blade seeking the cracks in armor.\n{player_boss.name} got criticaly hit for {int(player_champion.damage * 2.5)} damage!")
+                            if (phase_2_active and player_boss.name == "Crystal Sage") and  (evade_chance_boss < 50) and crystal_sage_copy_alive:
+                                crystal_sage_copy_alive = False
+                                print(f"The Assassin vanishes in a blur, his blade seeking the cracks in armor.\n{player_boss.name}'s illusion got criticaly stabed, leaving only {player_boss.name} standing.")
+                            else:
+                                boss_current_HP -= player_champion.damage * 2.5
+                                print(f"The Assassin vanishes in a blur, his blade seeking the cracks in armor.\n{player_boss.name} got criticaly stabed for {int(player_champion.damage * 2.5)} damage!")
                             skip()
                         elif player_champion.name == "Sorcerer":
                             moon_damage = real_champ_damage + player_current_stamina * 1.75
@@ -542,25 +547,30 @@ def fight():
                             special_move_cooldown = 0
                             if (phase_2_active and player_boss.name == "Crystal Sage") and  (evade_chance_boss < 50) and crystal_sage_copy_alive:
                                 crystal_sage_copy_alive = False
-                                print(f"The Sorcerer channels all her stamina, shaping a dark moon of arcane force.\n{player_boss.name} and her copy is blasted aside, taking {int(moon_damage)} damage!")
+                                print(f"The Sorcerer channels all her stamina, shaping a dark moon of arcane force.\n{player_boss.name} is blasted aside for {int(moon_damage)} HP!")
+                                print(f"\nHer illusion is torn appart.")
                             else:
-                                print(f"The Sorcerer channels all her stamina, shaping a dark moon of arcane force.\n{player_boss.name} is blasted aside, taking {int(moon_damage)} damage!")
+                                print(f"The Sorcerer channels all her stamina, shaping a dark moon of arcane force.\n{player_boss.name} is blasted aside for {int(moon_damage)} HP!")
                             skip()
                         elif player_champion.name == "Samurai":
                             counter_attack = True
-                            player_current_stamina -= 60
+                            player_current_stamina -= 50
                             special_move_ready = False
                             special_move_cooldown = 0
-                            print("The Samurai tightens his stance, eyes sharp and blade ready.\nHe will counter the next attack with deadly precision.")
+                            print(f"The Samurai tightens his stance.\nReady to counter {player_boss.name} next attack.")
                             skip()
                         elif player_champion.name == "Pyromancer":
-                            player_current_stamina -= 60
+                            player_current_stamina -= 50
                             special_move_ready = False
                             special_move_cooldown = 0
-                            player_current_HP = player_current_HP / 2
                             flame_damage = real_champ_damage + player_current_HP * 2
-                            boss_current_HP -= flame_damage
-                            print(f"The Pyromancer sets herself aflame, damaging her self for {int(player_current_HP)}.\n{player_boss.name} is burned for {int(flame_damage)} damage!") # NEEDS CHANGE ---------
+                            player_current_HP = player_current_HP / 2
+                            if (phase_2_active and player_boss.name == "Crystal Sage") and  (evade_chance_boss < 50) and crystal_sage_copy_alive:
+                                crystal_sage_copy_alive = False
+                                print(f"The Pyromancer sets herself aflame, sacrificing {int(player_current_HP)} HP.\nShe grasps {player_boss.name}'s illusion — burning it alive, leaving only {player_boss.name} standing.")
+                            else:
+                                boss_current_HP -= flame_damage
+                                print(f"The Pyromancer sets herself aflame, sacrificing {int(player_current_HP)} HP.\nShe grasps {player_boss.name} — burning her for {int(flame_damage)} HP!")
                             skip()
                     else:
                         print("Not enough stamina to perform special move!")
@@ -664,6 +674,7 @@ def fight():
                             boss_phase_2_tansition()
 
         # Boss's turn
+        evade_chance = r.randint(1,100)
         match player_boss.name:
             case "Iudex Gundyr":    # Iudex Gundyr ----------------------------------------------------
                 player_champion_base_evade = player_champion.evade
@@ -682,10 +693,8 @@ def fight():
                     print(f"{player_boss.name} stands back on its feet, ready for next attack.")
                     shield_bash_stagger = False
                     skip()
-                else:
-                    evade_chance = r.randint(1,100)
-            
-                    if player_current_stamina >= 15 and evade_chance <= player_champion_base_evade:
+                else:            
+                    if player_current_stamina >= 15 and evade_chance < player_champion_base_evade:
                         print(f"{player_champion.name} evades {player_boss.name}'s attack!")
                         skip()
                     else:
@@ -757,10 +766,8 @@ def fight():
                     print(f"{player_boss.name} stands back on its feet, ready for next attack.")
                     shield_bash_stagger = False
                     skip()
-                else:
-                    evade_chance = r.randint(1,100)
-            
-                    if player_current_stamina >= 15 and evade_chance <= player_champion_base_evade:
+                else:            
+                    if player_current_stamina >= 15 and evade_chance < player_champion_base_evade:
                         print(f"{player_champion.name} evades {player_boss.name}'s attack!")
                         skip()
                     else:
@@ -809,7 +816,7 @@ def fight():
                 if phase_2_active and crystal_sage_copy_alive == False:
                     real_boss_damage = (player_boss.damage * 1.1)
                     crystal_sage_copy_alive = True
-                    print(f"{player_boss.name} summons new copy of herself.")       # NEEDS CHANGE -----------------------------------------
+                    print(f"Reality warps as {player_boss.name} summons another illusion.")
                     skip()
                 if player_boss.damage_type in player_champion.damage_resistance:
                     damage_boss_text = f"{player_boss.name}'s attack lacks its usual strength, dealing only {int(real_boss_damage)} damage."
@@ -822,10 +829,8 @@ def fight():
                     print(f"{player_boss.name} stands back on its feet, ready for next attack.")
                     shield_bash_stagger = False
                     skip()
-                else:
-                    evade_chance = r.randint(1,101)
-            
-                    if player_current_stamina >= 20 and evade_chance <= player_champion.evade:
+                else:            
+                    if player_current_stamina >= 15 and evade_chance < player_champion.evade:
                         print(f"{player_champion.name} evades {player_boss.name}'s attack!")
                         skip()
                     else:
@@ -885,10 +890,8 @@ def fight():
                     print(f"{player_boss.name} stands back on its feet, ready for next attack.")
                     shield_bash_stagger = False
                     skip()
-                else:
-                    evade_chance = r.randint(1,101)
-            
-                    if player_current_stamina >= 20 and evade_chance <= player_champion.evade:
+                else:            
+                    if player_current_stamina >= 15 and evade_chance < player_champion.evade:
                         print(f"{player_champion.name} evades {player_boss.name}'s attack!")
                         skip()
                     else:
@@ -950,9 +953,7 @@ def fight():
                     shield_bash_stagger = False
                     skip()
                 else:
-                    evade_chance = r.randint(1,101)
-            
-                    if player_current_stamina >= 20 and evade_chance <= player_champion.evade:
+                    if player_current_stamina >= 15 and evade_chance < player_champion.evade:
                         print(f"{player_champion.name} evades {player_boss.name}'s attack!")
                         skip()
                     else:
@@ -1012,10 +1013,8 @@ def fight():
                     print(f"{player_boss.name} stands back on its feet, ready for next attack.")
                     shield_bash_stagger = False
                     skip()
-                else:
-                    evade_chance = r.randint(1,101)
-            
-                    if player_current_stamina >= 20 and evade_chance <= player_champion.evade:
+                else:            
+                    if player_current_stamina >= 15 and evade_chance < player_champion.evade:
                         print(f"{player_champion.name} evades {player_boss.name}'s attack!")
                         skip()
                     else:
@@ -1075,10 +1074,8 @@ def fight():
                     print(f"{player_boss.name} stands back on its feet, ready for next attack.")
                     shield_bash_stagger = False
                     skip()
-                else:
-                    evade_chance = r.randint(1,101)
-            
-                    if player_current_stamina >= 20 and evade_chance <= player_champion.evade:
+                else:            
+                    if player_current_stamina >= 15 and evade_chance < player_champion.evade:
                         print(f"{player_champion.name} evades {player_boss.name}'s attack!")
                         skip()
                     else:
