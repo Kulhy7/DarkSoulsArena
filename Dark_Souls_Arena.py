@@ -78,9 +78,9 @@ champions = [
     Champion("Knight", 150,80,100,40,"Standard","Slash","Strike/Magic"),
     Champion("Paladin", 200,60,110,30,"Strike","Slash","Strike/Magic"),
     Champion("Assassin", 120,100,90,70,"Slash","Strike/Magic","Slash/Fire"),
-    Champion("Sorcerer", 110,120,90,40,"Magic","Magic","Slash/Fire"),
+    Champion("Sorcerer", 110,110,90,40,"Magic","Magic","Slash/Fire"),
     Champion("Samurai", 130,80,100,50,"Slash","Strike","Magic/Fire"),
-    Champion("Pyromancer", 110,90,90,40,"Fire","Fire","Slash")
+    Champion("Pyromancer", 110,120,90,40,"Fire","Fire","Slash")
 ]
 
 # Bosses ----------------------------------------
@@ -166,8 +166,9 @@ def main_menu():    # Main menu function
             print("Invalid input. Try again.\n")
             skip()
 
-def players_achivements():
+def players_achivements():      # Not implemented
     pass
+
 def choose_champion_boss():     # Function to choose champion and boss
     global player_champion
     global player_boss
@@ -179,7 +180,11 @@ def choose_champion_boss():     # Function to choose champion and boss
             print(f"{i + 1}. {champ.name} - HP: {champ.HP}, Damage: {champ.damage}, Stamina: {champ.stamina}, Evade: {champ.evade}%")
             i += 1
         try:
+            print(f"{i+1}. Back to main menu")
             player_choice = int(input(f"Choose your champion (1-{len(champions)}): "))
+            if player_choice == (i+1):
+                clear_screen()
+                main_menu()
             player_champion = champions[player_choice-1]
             print(f"You have chosen {player_champion.name}!")
             clear_screen()
@@ -196,7 +201,11 @@ def choose_champion_boss():     # Function to choose champion and boss
             print(f"{y + 1}. {boss.name} - HP: {boss.HP}, Damage: {boss.damage}")
             y += 1
         try:
+            print(f"{y+1}. Back to main menu")
             player_choice = int(input(f"Pick a boss you want to fight (1-{len(bosses)}): "))
+            if player_choice == (y+1):
+                clear_screen()
+                main_menu()
             player_boss = bosses[player_choice-1]
             print(f"You have chosen {player_boss.name}!")
             clear_screen()
@@ -307,13 +316,13 @@ def boss_text(boss,champion):       # Function to display boss battle text
             phase_2_text_part1 = f"As the last Abyss Watcher falls, the {champion} stands victorious"
             phase_2_text_part2 = "then the souls of the fallen gather, filling an empty vessel. From it, one final Abyss Watcher rises, filled with the suffering and fury of his fallen brothers."
         case "Pontiff Sulyvahn":
-            boss_intro = f"\nTwin swords gleam in the dim light as {boss} descends, a crownless sovereign of fire and deceit.\n"
-            boss_win_text = f"{champion} falls beneath the merciless onslaught of {boss}. The Pontiff’s dominion persists, cruel and unchallenged."
+            boss_intro = f"\nTwin swords gleam in the dim light as {boss} scrutinizes {champion} from afar.\n"
+            boss_win_text = f"{champion} is struck down beneath {boss}'s decree. Mercy has no place in this hall."
             boss_defeated_text = f"{boss} crumples, his ambition turned to ash. {champion} feels the oppressive weight of tyranny lift, if only for a fleeting moment."
-            boss_phase2_win_text = f"{champion} is overwhelmed by {boss}'s relentless assault, each strike a cold testament to power corrupted. Mercy has long fled from this hall."
-            boss_phase2_defeated_text = f"At last, {boss} crumbles, his silvered blades clattering to the ground. {champion} feels the oppressive weight of tyranny lift, if only for a moment."
-            phase_2_text_part1 = f"{boss} falters, shadows twisting around him"
-            phase_2_text_part2 = "then he surges forth, twin swords blazing, swifter and deadlier than ever, each strike a storm of wrath and steel."
+            boss_phase2_win_text = f"{champion} falls beneath the merciless onslaught of {boss}. The Pontiff’s dominion endures, cruel and unchallenged."
+            boss_phase2_defeated_text = f"At last, {boss} and his phantom crumbles, their silvered blades clattering lifelessly to the ground. {champion} feels the oppressive weight of tyranny lift."
+            phase_2_text_part1 = f"{boss} raises the Sword of Judgment to his chest"
+            phase_2_text_part2 = "a phantom tears itself free from his body, moving in perfect mimicry of his strikes."
         case "Yhorm the Giant":
             boss_intro = f"\nThe ground trembles with each step as {boss} rises.\n"
             boss_win_text = f"{champion} is crushed beneath the towering might of {boss}. His sorrowful roar echoes across the desolate land."
@@ -363,7 +372,7 @@ def special_text(champion):     # Function to display special attacks
             special_attack_text = "Iai Stance"
         case "Pyromancer":
             special_attack_text = "Cinders Kiss"
-    
+
     return(special_attack_text)
     
 def boss_phase_2_tansition():
@@ -876,7 +885,7 @@ def fight():        # The battle logic
                         boss_current_HP -= counter_damage_player
                         print(f"{player_champion.name} counters {player_boss.name} attack, slashing him for {int(counter_damage_player)} damage.\n{player_champion.name} is wounded only for {int(counter_damage_boss)} damage.")
                         skip()
-                    elif player_current_stamina >= 15 and evade_chance < player_champion_base_evade:
+                    elif player_current_stamina >= 15 and evade_chance < player_champion.evade:
                         print(f"{player_champion.name} evades {player_boss.name}'s attack!")
                         skip()
                     else:
@@ -916,7 +925,6 @@ def fight():        # The battle logic
             case "Abyss Watchers": # Abyss Watchers ----------------------------------------------------
                 if phase_2_active:
                     player_boss.damage_type = "Fire"
-                    
 
                     if player_boss.damage_type in player_champion.damage_resistance:
                         damage_boss_text = f"{AW_single}'s attack lacks its usual strength, dealing only {int(real_boss_damage * 1.2)} damage."
@@ -1019,8 +1027,17 @@ def fight():        # The battle logic
                         print(boss_phase_2_tansition)
 
             case "Pontiff Sulyvahn": # Pontiff Sulyvahn ----------------------------------------------------
+                player_champion_base_evade = player_champion.evade
                 if phase_2_active:
-                    pass
+                    if player_current_stamina >= 15 and evade_chance < player_champion_base_evade: 
+                        print(f"{player_champion.name} senses the phantom's movement and dodges the mirrored strike!")
+                        skip()
+                    else:
+                        player_champion_base_evade = player_champion.evade + 30
+                        phantom_damage = real_boss_damage * 0.3
+                        player_current_HP -= phantom_damage
+                        print(f"A phantom bursts forth from Pontiff Sulyvahn, raking {player_champion.name} for {int(phantom_damage)} damage!")
+                        skip()
                 
                 if player_boss.damage_type in player_champion.damage_resistance:
                     damage_boss_text = f"{player_boss.name}'s attack lacks its usual strength, dealing only {int(real_boss_damage)} damage."
