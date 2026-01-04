@@ -50,6 +50,57 @@ turtle_neck_count = 1 # number of turtle necks available
 exalted_flesh_count = 1 # number of exalted fleshes available
 exalted_flesh_active = False # boost damage for 1 turn
 
+# Achivements ---------------------------------------------------
+trophies = {
+    "Iudex_Gundyr_defeated": False,
+    "Vordt_of_the_Boreal_Valley_defeated": False,
+    "Crystal_Sage_defeated": False,
+    "Abyss_Watchers_defeated": False,
+    "Pontiff_Sulyvahn_defeated": False,
+    "Yhorm_the_Giant_defeated": False,
+    "Soul_of_Cinder_defeated": False,
+    "all_bosses_defeated": False,
+    "Yhorm_the_Giant_defeated_without_Storm_Ruler": False,
+    "boss_defeated_without_using_consumables": False,
+    "boss_defeated_no_hit": False,
+    "boss_defeated_with_only_special_attacks": False,
+    "deal_no_damage_to_boss": False,
+    "all_achivements_acquired": False
+}
+
+# Initialisation of the trophy.txt for achivements
+trophy_file = "trophy.txt"
+if not os.path.exists(trophy_file):
+    with open(trophy_file, "w") as file:
+        for name, value in trophies.items():
+            file.write(f"{name} = {value}\n")
+
+def save_trophies():
+    with open(trophy_file, "w") as file:
+        for name, value in trophies.items():
+            file.write(f"{name} = {value}\n")
+
+def set_trophy(trophy_name):
+    if trophy_name in trophies:
+        trophies[trophy_name] = True
+        save_trophies()
+    else:
+        print(f"Warning: Trophy '{trophy_name}' does not exist.")
+
+# Load existing trophies
+try:
+    with open(trophy_file, "r") as file:
+        for line in file:
+            if " = " in line:
+                name, value = line.strip().split(" = ")
+                if name in trophies:  # only update known trophies
+                    trophies[name] = True if value == "True" else False
+except Exception as error:
+    print(f"Error loading trophy file: {error}. Resetting to defaults.")
+    save_trophies()
+    
+
+
 # Champion Class ----------------------------------------
 class Champion:
     def __init__(self, name, HP, damage, stamina, evade, damage_type, damage_resistance, damage_weakness):
@@ -69,18 +120,18 @@ class Boss:
         self.HP = HP
         self.damage = damage
         self.evade = evade # percentage chance to evade an attack
-        self.damage_type = damage_type  # Standard, Slash, Strike, Magic, Fire, Dark
+        self.damage_type = damage_type  # Standard, Slash, Strike, Magic, Fire, Lightning
         self.damage_resistance = damage_resistance
         self.damage_weakness = damage_weakness
 
 # Champions ----------------------------------------
 champions = [
-    Champion("Knight", 150,80,100,40,"Standard","Slash","Strike/Magic"),
-    Champion("Paladin", 200,60,110,30,"Strike","Slash","Strike/Magic"),
-    Champion("Assassin", 120,100,90,70,"Slash","Strike/Magic","Slash/Fire"),
-    Champion("Sorcerer", 110,110,90,40,"Magic","Magic","Slash/Fire"),
-    Champion("Samurai", 130,80,100,50,"Slash","Strike","Magic/Fire"),
-    Champion("Pyromancer", 110,120,90,40,"Fire","Fire","Slash")
+    Champion("Knight", 150,80,100,40,"Standard","Slash","Strike/Magic/Lightning"),
+    Champion("Paladin", 200,60,110,30,"Strike","Slash","Strike/Magic/Lightning"),
+    Champion("Assassin", 120,100,90,70,"Slash","Strike/Lightning","Slash/Fire"),
+    Champion("Sorcerer", 120,110,90,50,"Magic","Magic/Lightning","Slash/Fire"),
+    Champion("Samurai", 135,80,100,50,"Slash","Strike","Magic/Fire"),
+    Champion("Pyromancer", 120,120,90,50,"Fire","Fire/Lightning","Slash")
 ]
 
 # Bosses ----------------------------------------
@@ -171,8 +222,9 @@ def choose_champion_boss():     # Function to choose champion and boss
                 clear_screen()
                 main_menu()
             player_champion = champions[player_choice-1]
-            print(f"You have chosen {player_champion.name}!")
             clear_screen()
+            print(f"You have chosen {player_champion.name}!")
+            skip()
             break
         except (IndexError,ValueError):
             clear_screen()
@@ -183,26 +235,29 @@ def choose_champion_boss():     # Function to choose champion and boss
         for boss in bosses:
             print(f"{y + 1}. {boss.name} - HP: {boss.HP}, Damage: {boss.damage}")
             y += 1
-        try:
-            print(f"{y+1}. Back to main menu")
-            player_choice = int(input(f"Pick a boss you want to chalange (1-{len(bosses)}): "))
-            if player_choice == (y+1):
+        
+        print(f"{y+1}. Back to main menu")
+        player_choice = int(input(f"Pick a boss you want to chalange (1-{len(bosses)}): "))
+        if player_choice == (y+1):
+            clear_screen()
+            main_menu()
+        player_boss = bosses[player_choice-1]
+        clear_screen()
+        print(f"You have chosen {player_boss.name}!")
+        skip()
+        while True:
+            clear_screen()
+            print("Travers the white mist?\n")
+            choice_fog = input("Yes (1) or No (2): ")
+            if choice_fog == '1':
+                clear_screen()
+                fight()
+            elif choice_fog == '2':
                 clear_screen()
                 main_menu()
-            player_boss = bosses[player_choice-1]
-            print(f"You have chosen {player_boss.name}!")
-            while True:
+            else:
                 clear_screen()
-                print("Travers the white mist?\n")
-                choice_fog = input("Yes (1) or No (2): ")
-                if choice_fog == '1':
-                    clear_screen()
-                    fight()
-                elif choice_fog == '2':
-                    clear_screen()
-                    main_menu()
-        except:
-            clear_screen()
+        
 def champion_list():    # Function to display champion list
     print("List of Champions:\n")
     print("Knight\nOnce a proud guardian of a fallen kingdom, he now roams the ash-choked lands, bound by memory and regret.\nWeapon: Broadsword\n")
@@ -237,28 +292,8 @@ def damage_types():     # Function to display damage types
     print("Fire\nFlames that burn and sear, capable of rending flesh and spirit; less effective against flame followers and demons alike.\n")
     skip()
 
-def update_trophy(boss_name):# DONT USE!
-    trophy_file = "trophy.txt"
-
-    trophies = {}
-    with open(trophy_file, "r") as file:
-        for x in file:
-            name, value = x.strip().split(" = ")
-            if value == "True":
-                trophies[name] = True
-            else:
-                trophies[name] = False
-
-    boss_trophy = f"{boss_name}"
-    if boss_trophy in trophies:
-        trophies[boss_trophy] = True
-
-    with open(trophy_file, "w") as file:
-        for name, value in trophies.items():
-            file.write(f"{name} = {value}\n")
-
 def credits():      # Function to display credits
-    print("Game made by Luboš Kulhan.\nLast update in 2025-12-22.")
+    print("Game made by Luboš Kulhan.\nLast update in 4-1-2026.")
     skip()
 
 def boss_text(boss,champion):       # Function to display boss battle text
@@ -325,12 +360,11 @@ def boss_text(boss,champion):       # Function to display boss battle text
             boss_win_text = f"{champion} falls, their flame extinguished. {boss} roams once more, awaiting the next challenger."
             boss_defeated_text = f"{boss} collapses into ash and silence. Yet even in victory, {champion} feels the weight of a thousand untold sacrifices."
             boss_phase2_win_text = f"{champion} falls before the first Lord's unyielding will. The throne remains eternal."
-            boss_phase2_defeated_reignite = f"{boss} scatters to final embers. {champion} kneels before the First Flame and feeds it their soul. The cycle endures."
-            boss_phase2_defeated_extinguish = f"{boss} scatters to final embers. {champion} turns from the First Flame and walks into shadow. The Age of Dark begins."
+            boss_phase2_defeated_text = f"{boss} collapses into drifting cinders, the gathered souls of the Lords of Cinder fading into silence. The fire dims, and the age ends."
             if 1 == r.randint(1,100):
                 phase_2_text_part1 = "Plim Plim Plom, Plim Plom Plim, Plim Plom"
             else:
-                phase_2_text_part1 = f"{boss} crumbles to ash"
+                phase_2_text_part1 = f"{boss} staggers, planting the coiled sword deep into the ashen earth"
                 phase_2_text_part2 = "then reignites with blinding fury. Gwyn's soul dominates—the progenitor of flame rejects defeat."
 
     return (
@@ -341,8 +375,7 @@ def boss_text(boss,champion):       # Function to display boss battle text
         phase_2_text_part2 or "",
         boss_phase2_win_text or "",
         boss_phase2_defeated_text or "",
-        boss_phase2_defeated_reignite or "",
-        boss_phase2_defeated_extinguish or ""
+        boss_phase2_defeated_text or "",
     )        
 
 def special_text(champion):     # Function to display special attacks
@@ -405,7 +438,18 @@ def fight():        # The battle logic
     player_current_stamina = player_champion.stamina
     storm_ruler_detection = 0
     storm_ruler_picked_up = False
-    strom_king_active = True
+    used_consumables = False
+    player_got_hit = False
+    used_only_specials = True
+    dealt_damage_to_boss = False
+    picked_up_storm_ruler = False
+
+    # Reset from previous game
+    exalted_flesh_active = False
+    shield_bash_stagger = False
+    determination_active = False
+    counter_attack = False
+    special_move_ready = True
 
     # Boss text
     boss_text(player_boss.name,player_champion.name)
@@ -447,13 +491,14 @@ def fight():        # The battle logic
 
         # Player's turn
         while True:
-            if (storm_ruler_detection == 1) and storm_ruler_picked_up: 
+            if (storm_ruler_detection == 1) and player_boss.name == "Yhorm the Giant": 
                     while True:
                         try:
                             clear_screen()
                             print(f"{player_champion.name} glimpses at Yhorms throne, next to it a half broken sword.\nPick up the Storm Ruler?")
                             pick_up_storm_ruler = input("\nYes (1) or No (2): ")
                             if pick_up_storm_ruler == '1':
+                                picked_up_storm_ruler = True
                                 clear_screen()
                                 storm_ruler_detection += 1
                                 print(f"{player_champion.name} picked up the Storm Ruler.")
@@ -464,6 +509,7 @@ def fight():        # The battle logic
                                 clear_screen()
                                 storm_ruler_detection += 1
                                 print(f"{player_champion.name} decided to not take the sword.")
+                                storm_ruler_picked_up = False
                                 skip()
                                 break
                         except:
@@ -508,13 +554,16 @@ def fight():        # The battle logic
                     if player_current_stamina >= 30:
                         evade_chance_boss = r.randint(1,100)
                         if (evade_chance_boss <= player_boss.evade) and shield_bash_stagger == False:
+                            used_only_specials = False
                             player_current_stamina -= 30
                             clear_screen()
                             if phase_2_active and player_boss.name == "Abyss Watchers":
+                                player_got_hit = True
                                 print(f"{AW_single} steps aside, causing {player_champion.name} to miss their attack!\n")
                                 player_current_HP -= (real_boss_damage * 0.5)
                                 print(f"{AW_single} counter attacks, dealing {int(real_boss_damage * 0.5)} damage to {player_champion.name}!")
                             else:
+                                player_got_hit = True
                                 print(f"{player_boss.name} steps aside, causing {player_champion.name} to miss their attack!\n")
                                 player_current_HP -= (real_boss_damage * 0.5)
                                 print(f"{player_boss.name} counter attacks, dealing {int(real_boss_damage * 0.5)} damage to {player_champion.name}!")
@@ -530,12 +579,15 @@ def fight():        # The battle logic
                                 skip()
                                 main_menu()
                         elif (phase_2_active and player_boss.name == "Crystal Sage") and  (evade_chance_boss < 50) and crystal_sage_copy_alive:
+                            used_only_specials = False
                             clear_screen()
                             player_current_stamina -= 30
                             crystal_sage_copy_alive = False
                             print(f"{player_champion.name} shatters the false Sage, leaving only {player_boss.name} standing.")
                             skip()
                         else:
+                            used_only_specials = False
+                            dealt_damage_to_boss = True
                             if determination_active and exalted_flesh_active:
                                 clear_screen()
                                 boosted_damage = real_champ_damage * 1.2 * 1.2
@@ -569,12 +621,13 @@ def fight():        # The battle logic
                         skip()
                 elif attack_choice == '2':
                     clear_screen()
-                    if player_current_stamina >= 50 and strom_king_active and special_move_ready:
+                    if player_current_stamina >= 50 and storm_ruler_picked_up and special_move_ready:
+                        dealt_damage_to_boss = True
                         special_move_ready = False
                         special_move_cooldown = 0
                         boss_current_HP -= 3000
                         player_current_stamina -= 50
-                        print(f"{player_champion.name} holds his stance, charging the Storm Ruler. Then release the accumulated storm and dealing 3000 damage to {player_boss.name}") # NEEDS CHANGE (probably)
+                        print(f"{player_champion.name} holds his stance, charging the Storm Ruler. Then release the accumulated storm and dealing 3000 damage to {player_boss.name}")
                         skip()
                     elif player_current_stamina >= 50 and special_move_ready:
                         if player_champion.name == "Knight":
@@ -607,10 +660,12 @@ def fight():        # The battle logic
                                 crystal_sage_copy_alive = False
                                 print(f"The Assassin vanishes in a blur, his blade seeking the cracks in armor.\n{player_boss.name}'s illusion got criticaly stabed, leaving only {player_boss.name} standing.")
                             else:
+                                dealt_damage_to_boss = True
                                 boss_current_HP -= player_champion.damage * 2.5
                                 print(f"The Assassin vanishes in a blur, his blade seeking the cracks in armor.\n{player_boss.name} got criticaly stabed for {int(player_champion.damage * 2.5)} damage!")
                             skip()
                         elif player_champion.name == "Sorcerer":
+                            dealt_damage_to_boss = True
                             moon_damage = real_champ_damage + player_current_stamina * 1.75
                             boss_current_HP -= moon_damage
                             player_current_stamina = 0
@@ -641,13 +696,16 @@ def fight():        # The battle logic
                             flame_damage = real_champ_damage + player_current_HP * 2
                             player_current_HP = player_current_HP / 2
                             if phase_2_active and player_boss.name == "Abyss Watchers":
+                                dealt_damage_to_boss = True
                                 print(f"The Pyromancer sets herself aflame, sacrificing {int(player_current_HP)} HP.\nShe grasps {AW_single} — burning it for {int(flame_damage)} HP!")
                             elif player_boss.name == "Abyss Watchers":
+                                dealt_damage_to_boss = True
                                 print(f"The Pyromancer sets herself aflame, sacrificing {int(player_current_HP)} HP.\nShe grasps {player_boss.name} — burning them for {int(flame_damage)} HP!")
                             elif (phase_2_active and player_boss.name == "Crystal Sage") and  (evade_chance_boss < 50) and crystal_sage_copy_alive:
                                 crystal_sage_copy_alive = False
                                 print(f"The Pyromancer sets herself aflame, sacrificing {int(player_current_HP)} HP.\nShe grasps {player_boss.name}'s illusion — burning it alive, leaving only {player_boss.name} standing.")
                             else:
+                                dealt_damage_to_boss = True
                                 boss_current_HP -= flame_damage
                                 print(f"The Pyromancer sets herself aflame, sacrificing {int(player_current_HP)} HP.\nShe grasps {player_boss.name} — burning it for {int(flame_damage)} HP!")
                             skip()
@@ -674,6 +732,7 @@ def fight():        # The battle logic
                 if consumable_choice == '1':
                     clear_screen()
                     if estus_flask_count > 0:
+                        used_consumables = True
                         player_current_HP += estus_flask_heal
                         estus_flask_count -= 1
                         print(f"{player_champion.name} drinks from Estus Flask, restoring {estus_flask_heal} HP!")
@@ -686,6 +745,7 @@ def fight():        # The battle logic
                 elif consumable_choice == '2':
                     clear_screen()
                     if turtle_neck_count > 0:
+                        used_consumables = True
                         player_current_stamina += turtle_neck_recovery
                         turtle_neck_count -= 1
                         print(f"{player_champion.name} consumes a Turtle Neck, restoring {turtle_neck_recovery} stamina!")
@@ -698,6 +758,7 @@ def fight():        # The battle logic
                 elif consumable_choice == '3':
                     clear_screen()
                     if exalted_flesh_count > 0:
+                        used_consumables = True
                         exalted_flesh_count -= 1
                         exalted_flesh_active = True
                         print(f"{player_champion.name} consumes Exalted Flesh, boosting damage for this turn!")
@@ -768,6 +829,8 @@ def fight():        # The battle logic
                     skip()
                 else:            
                     if counter_attack:
+                        player_got_hit = True
+                        dealt_damage_to_boss = True
                         counter_damage_player = (real_champ_damage * 1.75)
                         counter_damage_boss = (real_boss_damage/3)
                         player_current_HP -= counter_damage_boss
@@ -778,6 +841,7 @@ def fight():        # The battle logic
                         print(f"{player_champion.name} evades {player_boss.name}'s attack!")
                         skip()
                     else:
+                        player_got_hit = True
                         player_current_HP -= real_boss_damage
                         print(damage_boss_text)
                         skip()
@@ -817,6 +881,7 @@ def fight():        # The battle logic
                     player_champion_base_evade = player_champion.evade - 10
                     frost_on_player += 1
                     if frost_on_player >= 3:
+                        player_got_hit = True
                         frost_on_player = 0
                         frost_damage = (player_boss.damage*0.5)
                         player_current_HP -= frost_damage
@@ -840,6 +905,8 @@ def fight():        # The battle logic
                     skip()
                 else:            
                     if counter_attack:
+                        dealt_damage_to_boss = True
+                        player_got_hit = True
                         counter_damage_player = (real_champ_damage * 1.75)
                         counter_damage_boss = (real_boss_damage/3)
                         player_current_HP -= counter_damage_boss
@@ -850,6 +917,7 @@ def fight():        # The battle logic
                         print(f"{player_champion.name} evades {player_boss.name}'s attack!")
                         skip()
                     else:
+                        player_got_hit = True
                         player_current_HP -= real_boss_damage
                         print(damage_boss_text)
                         skip()
@@ -903,6 +971,8 @@ def fight():        # The battle logic
                     skip()
                 else:            
                     if counter_attack:
+                        dealt_damage_to_boss = True
+                        player_got_hit = True
                         counter_damage_player = (real_champ_damage * 1.75)
                         counter_damage_boss = (real_boss_damage/3)
                         player_current_HP -= counter_damage_boss
@@ -913,6 +983,7 @@ def fight():        # The battle logic
                         print(f"{player_champion.name} evades {player_boss.name}'s attack!")
                         skip()
                     else:
+                        player_got_hit = True
                         player_current_HP -= real_boss_damage
                         print(damage_boss_text)
                         skip()
@@ -963,6 +1034,8 @@ def fight():        # The battle logic
                         skip()
                     else:            
                         if counter_attack:
+                            dealt_damage_to_boss = True
+                            player_got_hit = True
                             counter_damage_player = (real_champ_damage * 1.75)
                             counter_damage_boss = ((real_boss_damage/3) * 1.2)
                             player_current_HP -= counter_damage_boss
@@ -973,6 +1046,7 @@ def fight():        # The battle logic
                             print(f"{player_champion.name} evades {AW_single}'s attack!")
                             skip()
                         else:
+                            player_got_hit = True
                             player_current_HP -= (real_boss_damage * 1.2)
                             print(damage_boss_text)
                             skip()
@@ -1010,6 +1084,8 @@ def fight():        # The battle logic
                             skip()
                         else:
                             if counter_attack:
+                                dealt_damage_to_boss = True
+                                player_got_hit = True
                                 counter_damage_player = (real_champ_damage * 1.75)
                                 counter_damage_boss = (real_boss_damage/3)
                                 player_current_HP -= counter_damage_boss
@@ -1017,6 +1093,7 @@ def fight():        # The battle logic
                                 print(f"{player_champion.name} counters {player_boss.name} attack, slashing him for {int(counter_damage_player)} damage.\n{player_champion.name} is wounded only for {int(counter_damage_boss)} damage.")
                                 skip()
                             else:
+                                player_got_hit = True
                                 evade_chance = r.randint(1,100)
                                 player_current_HP -= real_boss_damage
                                 print(damage_boss_text)    # first AW
@@ -1057,6 +1134,7 @@ def fight():        # The battle logic
                         print(f"{player_champion.name} senses the phantom's movement and dodges the mirrored strike!")
                         skip()
                     else:
+                        player_got_hit = True
                         player_champion_base_evade = player_champion.evade + 30
                         phantom_damage = real_boss_damage * 0.3
                         player_current_HP -= phantom_damage
@@ -1076,6 +1154,8 @@ def fight():        # The battle logic
                     skip()
                 else:
                     if counter_attack:
+                        dealt_damage_to_boss = True
+                        player_got_hit = True
                         counter_damage_player = (real_champ_damage * 1.75)
                         counter_damage_boss = (real_boss_damage/3)
                         player_current_HP -= counter_damage_boss
@@ -1086,6 +1166,7 @@ def fight():        # The battle logic
                         print(f"{player_champion.name} evades {player_boss.name}'s attack!")
                         skip()
                     else:
+                        player_got_hit = True
                         player_current_HP -= real_boss_damage
                         print(damage_boss_text)
                         skip()
@@ -1124,6 +1205,7 @@ def fight():        # The battle logic
                 if phase_2_active:
                     player_champion_base_evade = player_champion.evade - 10
                     player_boss.damage_type = "Fire"
+                    real_boss_damage = (real_boss_damage*1.1)
 
                 if player_boss.damage_type in player_champion.damage_resistance:
                     damage_boss_text = f"{player_boss.name}'s attack lacks its usual strength, dealing only {int(real_boss_damage)} damage."
@@ -1138,6 +1220,8 @@ def fight():        # The battle logic
                     skip()
                 else:            
                     if counter_attack:
+                        dealt_damage_to_boss = True
+                        player_got_hit = True
                         counter_damage_player = (real_champ_damage * 1.75)
                         counter_damage_boss = (real_boss_damage/3)
                         player_current_HP -= counter_damage_boss
@@ -1148,6 +1232,7 @@ def fight():        # The battle logic
                         print(f"{player_champion.name} evades {player_boss.name}'s attack!")
                         skip()
                     else:
+                        player_got_hit = True
                         player_current_HP -= real_boss_damage
                         print(damage_boss_text)
                         skip()
@@ -1183,11 +1268,25 @@ def fight():        # The battle logic
 
             case "Soul of Cinder": # Soul of Cinder ----------------------------------------------------
                 if phase_2_active:
-                    phase_2_stat_modified = True
-            
-                if player_boss.damage_type in player_champion.damage_resistance:
+                    damage_types_array = ["Lightning","Fire"]
+                    current_damage_type = r.choice(damage_types_array)
+                else:
+                    damage_types_array = ["Standard","Slash","Strike","Magic","Fire"]
+                    current_damage_type = r.choice(damage_types_array)
+
+                if current_damage_type in player_champion.damage_resistance:
+                    real_boss_damage = player_boss.damage * 0.9
                     damage_boss_text = f"{player_boss.name}'s attack lacks its usual strength, dealing only {int(real_boss_damage)} damage."
-                elif player_boss.damage_type in player_champion.damage_weakness:
+                elif current_damage_type in player_champion.damage_weakness:
+                    real_boss_damage = player_boss.damage * 1.1
+                    damage_boss_text = f"{player_champion.name} takes a heavy hit — {player_boss.name} deals {int(real_boss_damage)} damage."
+                else:
+                    real_boss_damage = player_boss.damage
+                    damage_boss_text = f"{player_boss.name} hits {player_champion.name}, dealing {int(real_boss_damage)} damage."
+
+                if current_damage_type in player_champion.damage_resistance:
+                    damage_boss_text = f"{player_boss.name}'s attack lacks its usual strength, dealing only {int(real_boss_damage)} damage."
+                elif current_damage_type in player_champion.damage_weakness:
                     damage_boss_text = f"{player_champion.name} takes a heavy hit — {player_boss.name} deals {int(real_boss_damage)} damage."
                 else:
                     damage_boss_text = f"{player_boss.name} hits {player_champion.name}, dealing {int(real_boss_damage)} damage."
@@ -1198,16 +1297,19 @@ def fight():        # The battle logic
                     skip()
                 else:            
                     if counter_attack:
+                        dealt_damage_to_boss = True
+                        player_got_hit = True
                         counter_damage_player = (real_champ_damage * 1.75)
                         counter_damage_boss = (real_boss_damage/3)
                         player_current_HP -= counter_damage_boss
                         boss_current_HP -= counter_damage_player
                         print(f"{player_champion.name} counters {player_boss.name} attack, slashing him for {int(counter_damage_player)} damage.\n{player_champion.name} is wounded only for {int(counter_damage_boss)} damage.")
                         skip()
-                    elif player_current_stamina >= 15 and evade_chance < player_champion_base_evade:
+                    elif player_current_stamina >= 15 and evade_chance < player_champion.evade:
                         print(f"{player_champion.name} evades {player_boss.name}'s attack!")
                         skip()
                     else:
+                        player_got_hit = True
                         player_current_HP -= real_boss_damage
                         print(damage_boss_text)
                         skip()
