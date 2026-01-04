@@ -89,9 +89,9 @@ bosses = [
     Boss("Vordt of the Boreal Valley",1500,40,0,"Strike","Slash","Strike"),
     Boss("Crystal Sage",1250,60,5,"Magic","Magic","Slash/Fire"),
     Boss("Abyss Watchers",800,50,15,"Standard","Magic","Slash/Fire"),
-    Boss("Pontiff Sulyvahn",1600,50,15,"Fire","Slash","Strike/Magic"),
-    Boss("Yhorm the Giant",2000,50,0,"Standard","Slash","Strike"),
-    Boss("Soul of Cinder",1500,60,5,"Fire","Fire","Strike/Magic")
+    Boss("Pontiff Sulyvahn",1500,50,10,"Fire","Slash","Strike/Magic"),
+    Boss("Yhorm the Giant",10000,50,0,"Standard","Slash","Strike"),
+    Boss("Soul of Cinder",1000,60,5,"Fire","Fire","Strike/Magic")
 ]
 
 # Functions ----------------------------------------
@@ -110,61 +110,46 @@ def main_menu():    # Main menu function
         print("Welcome to Dark Souls 3 Pantheon!")
         print("1. Start Game\n2. Champions list\n3. Bosses list\n4. Consumables list\n5. Damage types\n6. Achivements\n7. Credits\n8. Exit")
         choice = input("Enter your choice: ")
-        try:
-            if choice == '1':
+        if choice == '1':
+            while True:
                 clear_screen()
                 dif_choice = input("Choose your difficulty, Normal (1) or Hard (2): ")
-                try:
-                    if dif_choice == '1':
-                        difficulty_mode = "Normal"
-                        print("\nYou have chosen Normal mode. Foes will hold back.")
-                        skip()
-                        choose_champion_boss()
-                    elif dif_choice == '2':
-                        difficulty_mode = "Hard"
-                        print("\nYou have chosen Hard mode. Foes will show no mercy.")
-                        skip()
-                        choose_champion_boss()
-                    else:
-                        clear_screen()
-                        print("Invalid input. Try again.\n")
-                        skip()
-                except:
-                        clear_screen()
-                        print("Invalid input. Try again.\n")
-                        skip()
-            elif choice == '2':
-                clear_screen()
-                champion_list()
-            elif choice == '3':
-                clear_screen()
-                boss_list()
-            elif choice == '4':
-                clear_screen()
-                consumables_list()
-            elif choice == '5':
-                clear_screen()
-                damage_types()
-            elif choice == '6':
-                clear_screen()
-                players_achivements()
-            elif choice == '7':
-                clear_screen()
-                credits()
-            elif choice == '8':
-                clear_screen()
-                print("Farewell ashen one...")
-                sleep(2)
-                clear_screen()
-                exit_game()
-            else:
-                clear_screen()
-                print("Invalid input. Try again.\n")
-                skip()
-        except:
+                if dif_choice == '1':
+                    difficulty_mode = "Normal"
+                    print("\nYou have chosen Normal mode. Foes will hold back.")
+                    skip()
+                    choose_champion_boss()
+                elif dif_choice == '2':
+                    difficulty_mode = "Hard"
+                    print("\nYou have chosen Hard mode. Foes will show no mercy.")
+                    skip()
+                    choose_champion_boss()
+                else:
+                    clear_screen()
+        elif choice == '2':
             clear_screen()
-            print("Invalid input. Try again.\n")
-            skip()
+            champion_list()
+        elif choice == '3':
+            clear_screen()
+            boss_list()
+        elif choice == '4':
+            clear_screen()
+            consumables_list()
+        elif choice == '5':
+            clear_screen()
+            damage_types()
+        elif choice == '6':
+            clear_screen()
+            players_achivements()
+        elif choice == '7':
+            clear_screen()
+            credits()
+        elif choice == '8':
+            clear_screen()
+            print("Farewell ashen one...")
+            exit_game()
+        else:
+            clear_screen()
 
 def players_achivements():      # Not implemented
     pass
@@ -191,8 +176,6 @@ def choose_champion_boss():     # Function to choose champion and boss
             break
         except (IndexError,ValueError):
             clear_screen()
-            print("Invalid input. Try again.\n")
-            skip()
 
     while(True):
         y = 0
@@ -202,18 +185,24 @@ def choose_champion_boss():     # Function to choose champion and boss
             y += 1
         try:
             print(f"{y+1}. Back to main menu")
-            player_choice = int(input(f"Pick a boss you want to fight (1-{len(bosses)}): "))
+            player_choice = int(input(f"Pick a boss you want to chalange (1-{len(bosses)}): "))
             if player_choice == (y+1):
                 clear_screen()
                 main_menu()
             player_boss = bosses[player_choice-1]
             print(f"You have chosen {player_boss.name}!")
+            while True:
+                clear_screen()
+                print("Travers the white mist?\n")
+                choice_fog = input("Yes (1) or No (2): ")
+                if choice_fog == '1':
+                    clear_screen()
+                    fight()
+                elif choice_fog == '2':
+                    clear_screen()
+                    main_menu()
+        except:
             clear_screen()
-            fight()
-        except (IndexError,ValueError):
-            clear_screen()
-            print("Invalid input. Try again.\n")
-            skip()
 def champion_list():    # Function to display champion list
     print("List of Champions:\n")
     print("Knight\nOnce a proud guardian of a fallen kingdom, he now roams the ash-choked lands, bound by memory and regret.\nWeapon: Broadsword\n")
@@ -324,7 +313,7 @@ def boss_text(boss,champion):       # Function to display boss battle text
             phase_2_text_part1 = f"{boss} raises the Sword of Judgment to his chest"
             phase_2_text_part2 = "a phantom tears itself free from his body, moving in perfect mimicry of his strikes."
         case "Yhorm the Giant":
-            boss_intro = f"\nThe ground trembles with each step as {boss} rises.\n"
+            boss_intro = f"\nThe ground trembles as {boss} rises from his throne.\n"
             boss_win_text = f"{champion} is crushed beneath the towering might of {boss}. His sorrowful roar echoes across the desolate land."
             boss_defeated_text = f"{boss} collapses, the last ember of his dominion snuffed out. {champion} stands amidst the ruins of a kingdom long forgotten."
             boss_phase2_win_text = f"{champion} is incinerated in {boss}'s profane inferno. The giant's grief consumes all."
@@ -414,6 +403,9 @@ def fight():        # The battle logic
     boss_current_HP = player_boss.HP
     player_current_HP = player_champion.HP
     player_current_stamina = player_champion.stamina
+    storm_ruler_detection = 0
+    storm_ruler_picked_up = False
+    strom_king_active = True
 
     # Boss text
     boss_text(player_boss.name,player_champion.name)
@@ -433,7 +425,6 @@ def fight():        # The battle logic
     skip()
 
     while True:
-
         if player_champion.damage_type in player_boss.damage_resistance:
             real_champ_damage = player_champion.damage * 0.9
             damage_champ_text = f"{player_champion.name}'s attack proves less potent, dealing only {int(real_champ_damage)} damage."
@@ -456,6 +447,28 @@ def fight():        # The battle logic
 
         # Player's turn
         while True:
+            if (storm_ruler_detection == 1) and storm_ruler_picked_up: 
+                    while True:
+                        try:
+                            clear_screen()
+                            print(f"{player_champion.name} glimpses at Yhorms throne, next to it a half broken sword.\nPick up the Storm Ruler?")
+                            pick_up_storm_ruler = input("\nYes (1) or No (2): ")
+                            if pick_up_storm_ruler == '1':
+                                clear_screen()
+                                storm_ruler_detection += 1
+                                print(f"{player_champion.name} picked up the Storm Ruler.")
+                                storm_ruler_picked_up = True
+                                skip()
+                                break
+                            elif pick_up_storm_ruler == '2':
+                                clear_screen()
+                                storm_ruler_detection += 1
+                                print(f"{player_champion.name} decided to not take the sword.")
+                                skip()
+                                break
+                        except:
+                            pass
+
             if frost_on_player == 2:
                 print("You will take damage from frost this round!\n")
             print(f"{player_champion.name} - HP: {int(player_current_HP)}, Stamina: {player_current_stamina}")
@@ -469,7 +482,17 @@ def fight():        # The battle logic
             # Attack menu
             if player_action == '1':
                 clear_screen()
-                if special_move_ready:
+                if storm_ruler_picked_up and special_move_ready:
+                    print("Choose attack to execute:")
+                    print("1. Basic Attack (30 stamina)")
+                    print("2. Special Attack - Storm King (50 stamina)")
+                    print("3. Back")
+                elif storm_ruler_picked_up and special_move_ready == False:
+                    print("Choose attack to execute:")
+                    print("1. Basic Attack (30 stamina)")
+                    print("2. Special Attack - Storm King is on cooldown")
+                    print("3. Back")
+                elif special_move_ready:
                     print("Choose attack to execute:")
                     print("1. Basic Attack (30 stamina)")
                     print(f"2. Special Attack - {special_attack_text} (50 stamina)")
@@ -546,7 +569,14 @@ def fight():        # The battle logic
                         skip()
                 elif attack_choice == '2':
                     clear_screen()
-                    if player_current_stamina >= 50 and special_move_ready:
+                    if player_current_stamina >= 50 and strom_king_active and special_move_ready:
+                        special_move_ready = False
+                        special_move_cooldown = 0
+                        boss_current_HP -= 3000
+                        player_current_stamina -= 50
+                        print(f"{player_champion.name} holds his stance, charging the Storm Ruler. Then release the accumulated storm and dealing 3000 damage to {player_boss.name}") # NEEDS CHANGE (probably)
+                        skip()
+                    elif player_current_stamina >= 50 and special_move_ready:
                         if player_champion.name == "Knight":
                             shield_bash_stagger = True
                             player_current_stamina -= 50
@@ -630,8 +660,6 @@ def fight():        # The battle logic
                     continue
                 else:
                     clear_screen()
-                    print("Invalid input. Try again.\n")
-                    skip()
 
             # Consumables menu       
             elif player_action == '2':
@@ -682,8 +710,6 @@ def fight():        # The battle logic
                     continue
                 else:
                     clear_screen()
-                    print("Invalid input. Try again.\n")
-                    skip()
 
             # Skip attack
             elif player_action == '3':
@@ -693,8 +719,6 @@ def fight():        # The battle logic
                 break
             else:
                 clear_screen()
-                print("Invalid input. Try again.\n")
-                skip()
             
             # Boss dead checker and phase 2 activator
             if difficulty_mode == "Normal":
@@ -1096,9 +1120,11 @@ def fight():        # The battle logic
                             boss_phase_2_tansition()
 
             case "Yhorm the Giant": # Yhorm the Giant ----------------------------------------------------
+                player_champion_base_evade = player_champion.evade + 10
                 if phase_2_active:
-                    pass
-               
+                    player_champion_base_evade = player_champion.evade - 10
+                    player_boss.damage_type = "Fire"
+
                 if player_boss.damage_type in player_champion.damage_resistance:
                     damage_boss_text = f"{player_boss.name}'s attack lacks its usual strength, dealing only {int(real_boss_damage)} damage."
                 elif player_boss.damage_type in player_champion.damage_weakness:
@@ -1215,7 +1241,8 @@ def fight():        # The battle logic
                             boss_current_HP = player_boss.HP
                             phase_2_active = True
                             boss_phase_2_tansition()
-                    
+        
+        storm_ruler_detection += 1
         exalted_flesh_active = False
         shield_bash_stagger = False
         determination_active = False
