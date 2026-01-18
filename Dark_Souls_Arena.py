@@ -151,8 +151,7 @@ def clear_screen():    # Function to clear the screen
 def exit_game():    # Function to exit the game
     os._exit(1)
 def skip():     # Function to continue
-    print("\nPress Enter to continue.")
-    input()
+    input("\nPress Enter to continue.")
     clear_screen()
 
 def main_menu():    # Main menu function
@@ -203,7 +202,8 @@ def main_menu():    # Main menu function
             clear_screen()
 
 def players_achivements():      # Not implemented
-    pass
+    print("Coming soon!")
+    skip()
 
 def choose_champion_boss():     # Function to choose champion and boss
     global player_champion
@@ -293,7 +293,7 @@ def damage_types():     # Function to display damage types
     skip()
 
 def credits():      # Function to display credits
-    print("Game made by Luboš Kulhan.\nLast update in 4-1-2026.")
+    print("Game made by Luboš Kulhan.\nLast update in 18-1-2026.")
     skip()
 
 def boss_text(boss,champion):       # Function to display boss battle text
